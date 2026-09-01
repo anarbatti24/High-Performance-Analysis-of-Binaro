@@ -21,7 +21,7 @@ As discussed before, the total memory footprint of the simulation is 40MB. My L3
 
 With the optimization explain in the first line of v2, I get the following memory footprint: 
 
-2bits/int * 100int/puzzle * 100,000puzzles = 20,000,000 BITS = 20Mb or 2.5MB. Therefore, all my puzzles will be able to live within the L3 cache (24MiB across one instance), meaning that I can access data faster as I wouldn't have to travel to RAM.
+2bits/int * 100int/puzzle * 100,000puzzles = 20,000,000 bits = 20Mb or 2.5MB. Therefore, all my puzzles will be able to live within the L3 cache (24MiB across one instance), meaning that I can access data faster as I wouldn't have to travel to RAM.
 
 
 v3 (planned): Will use multi-threading to parallelize puzzle completion. My CPU is the Intel i7-13700H, which has 6 performance cores and 8 efficiency cores. The P-cores have hyper-threading so there are 12 P-threads and the E-cores don't have hyper-threading so there are 8 E-threads. Given that spinning up a thread takes a few milliseconds (too slow), I was going to implement a thread pool and have idle threads pull and solve puzzles as required.
