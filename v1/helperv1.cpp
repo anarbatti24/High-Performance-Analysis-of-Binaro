@@ -3,24 +3,11 @@
 
 
 /**
- * Function to read from file into grid
+ * @brief Function to read from a file into the PuzzleSet
  *
- * @param file 	The file we're reading from: 'binaro.txt'
- * @param grid 	The grid we're populating
+ * @param file 		The file we're reading from
+ * @param puzzles	The PuzzleSet we're reading into
  **/
-/**
-void readFromFile(std::ifstream& file, Grid& grid) {
-
-
-	for (int r = 0; r < ROWS; r++) {
-		for (int c = 0; c < COLS; c++) {
-			file >> grid[r][c];
-		}
-	}
-
-}
-**/
-
 void readFromFile(std::ifstream& file, PuzzleSet& puzzles) {
     
 	Grid grid;
@@ -222,9 +209,6 @@ void iterateRows(Grid& grid) {
 			}	
 		}
 	}
-
-
-
 }
 
 

@@ -7,6 +7,7 @@
 #include "../helper.hpp"
 
 
+
 /**
  * Function to read from file into grid
  *
@@ -17,12 +18,14 @@
 void readFromFile(std::ifstream& file, PuzzleSet& puzzles);
 
 
+
 /**
  * @brief Function for solving consecutive col numbers i.e. 0 0, 1 1
  *
  * @param grid The grid we're passing to solve
  **/
 void solveConsecutiveCols(Grid& grid);
+
 
 
 /**
@@ -33,12 +36,14 @@ void solveConsecutiveCols(Grid& grid);
 void solveConsecutiveRows(Grid& grid);
 
 
+
 /**
  * @brief Function for solving gaps in col numbers i.e. 0 # 0, # = 1
  * 
  * @param grid The grid we're passing to solve
- **/
+**/
 void solveGapCols(Grid& grid);
+
 
 
 /**
@@ -49,12 +54,14 @@ void solveGapCols(Grid& grid);
 void solveGapRows(Grid& grid);
 
 
+
 /**
  * @brief Function to iterate through columns (helper function of solveCol)
  *
  * @param grid
  **/
 void iterateCols(Grid& grid);
+
 
 
 /**
@@ -65,12 +72,14 @@ void iterateCols(Grid& grid);
 void iterateRows(Grid& grid);
 
 
+
 /**
  * @brief Function to control how long we run for (as long as there are 9s present)
  *
  * @param grid
  **/
 bool done(Grid& grid);
+
 
 
 #endif

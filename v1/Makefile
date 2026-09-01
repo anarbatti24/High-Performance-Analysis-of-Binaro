@@ -1,6 +1,6 @@
 # Variables for compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++20 -O3
+CXXFLAGS = -Wall -Wextra -std=c++20 -O1
 TARGET = solverv1
 
 # Default rule (runs when you type 'make')
