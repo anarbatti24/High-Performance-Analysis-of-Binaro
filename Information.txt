@@ -1,0 +1,46 @@
+VERSION 1
+==========================================================================================================
+anarbatti24@anarbatti24-laptop:~/Programs/BinaroSolver/v1$ perf stat -d -d -d ./solverv1
+
+REPORT
+=======================================
+CORRECT LINES: 1100000/1100000
+INCORRECT LINES: 0/1100000
+TIME TAKEN: 2149591325ns
+
+ Performance counter stats for './solverv1':
+
+                44      context-switches                 #     13.9 cs/sec  cs_per_second     
+                 1      cpu-migrations                   #      0.3 migrations/sec  migrations_per_second
+            22,719      page-faults                      #   7173.1 faults/sec  page_faults_per_second
+          3,167.26 msec task-clock                       #      1.0 CPUs  CPUs_utilized       
+         3,096,551      cpu_core/L1-dcache-load-misses/  #      nan %  l1d_miss_rate            (30.71%)
+     <not counted>      cpu_core/L1-icache-load-misses/  #      nan %  l1i_miss_rate          
+         1,292,188      cpu_core/LLC-loads/              #     67.8 %  llc_miss_rate            (15.40%)
+       174,376,267      cpu_core/branch-misses/          #      6.4 %  branch_miss_rate         (23.11%)
+     2,708,145,623      cpu_core/branches/               #    855.0 M/sec  branch_frequency     (30.81%)
+     7,202,770,222      cpu_core/cpu-cycles/             #      2.3 GHz  cycles_frequency       (38.51%)
+    12,562,641,583      cpu_core/instructions/           #      1.7 instructions  insn_per_cycle  (46.20%)
+     3,599,248,106      cpu_core/dTLB-loads/             #      0.0 %  dtlb_miss_rate           (46.18%)
+     <not counted>      cpu_atom/L1-icache-load-misses/  #      nan %  l1i_miss_rate            (0.00%)
+     <not counted>      cpu_atom/LLC-loads/              #      nan %  llc_miss_rate            (0.00%)
+     <not counted>      cpu_atom/branch-misses/          #      nan %  branch_miss_rate         (0.00%)
+     <not counted>      cpu_atom/branches/               #      nan M/sec  branch_frequency     (0.00%)
+     <not counted>      cpu_atom/cpu-cycles/             #      nan GHz  cycles_frequency       (0.00%)
+     <not counted>      cpu_atom/instructions/           #      nan instructions  insn_per_cycle  (0.00%)
+     <not counted>      cpu_atom/dTLB-loads/             #      nan %  dtlb_miss_rate           (0.00%)
+             TopdownL1 (cpu_core)                        #      6.5 %  tma_bad_speculation    
+                                                         #     14.4 %  tma_frontend_bound       (61.54%)
+                                                         #     20.5 %  tma_backend_bound      
+                                                         #     58.7 %  tma_retiring             (61.54%)
+             TopdownL1 (cpu_atom)                        #      nan %  tma_backend_bound        (0.00%)
+                                                         #      nan %  tma_frontend_bound       (0.00%)
+                                                         #      nan %  tma_bad_speculation    
+                                                         #      nan %  tma_retiring             (0.00%)
+
+       3.175065504 seconds time elapsed
+
+       3.084936000 seconds user
+       0.083943000 seconds sys
+
+==========================================================================================================
