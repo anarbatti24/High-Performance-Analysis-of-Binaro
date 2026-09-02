@@ -7,7 +7,7 @@ Over the past few months, Binaro has become my favorite pastime on the train to 
 
 During this time, I've also become increasingly interested in High Performance Computing (HPC) and understanding how the software we write interacts with hardware and how we can optimize our code to extract maximum performance from the hardware it runs on.
 
-Merging these two ideas was a very interesting though to me. Computers do things very fast and so I began thinking about creating a solver with the sole purpose of getting through 100,000 Binaro puzzles as quickly as possible. And from that, I started my **High Performance Analysis of Binaro**
+Merging these two ideas was a very interesting thought to me. Computers do things very fast and so I began thinking about creating a solver with the purpose of getting through 100,000 Binaro puzzles as quickly as possible. And from that, I started my **High Performance Analysis of Binaro**
 
 
 **Project Information and Direction**
@@ -21,16 +21,20 @@ Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmar
 Additionally, because of how I created my data structures, each puzzle takes up 400 bytes of memory, with the total simulation taking up 40MB 
 (400 bytes/puzzle * 100,000 puzzles).
 
+As discussed before, the total memory footprint of the simulation is 40MB. My L3 cache is able to store 24MiB of data, therefore, the bulk of my puzzles will need to live in RAM and will need to get fetched into L1/L2/L3. Using **perf** for profiling, I found that my *llc_miss_rate* (last-level cache miss rate) accounted for 70.5% of total *LLC-Loads*. This means that 70.5% of the time, when my CPU resorted to looking in the L3 cache for data, it couldn't find it and therefore had to make the trip to RAM, a very slow process (comparatively).
+
 
 **v2 (in progress):**
 
-Version 2 uses optimized data structures to store data, so instead of having std::array<std::array<int, 10>, 10> holding my grids, I was thinking perhaps I could create my own data type to store just 2 bits worth of information: 0 = 00, 1 = 11 and unknown, denoted by 9, will be 01, state 10 is unused.
-
-As discussed before, the total memory footprint of the simulation is 40MB. My L3 cache is able to store 24MiB of data, therefore, the bulk of my puzzles will need to live in RAM and will need to get fetched into L1/L2/L3. Using **perf** for profiling, I found that my *llc_miss_rate* (last-level cache miss rate) accounted for 70.5% of total *LLC-Loads*. This means that 70.5% of the time, when my CPU resorted to looking in the L3 cache for data, it couldn't find it and therefore had to make the trip to RAM, a very slow process (comparatively).
+Version 2 uses optimized data structures to store data, so instead of having std::array<std::array<int, 10>, 10> holding my grids, I was thinking perhaps I could store each row/column as a single 32 bit integer, uint32_t.
 
 With the optimization explained in the first line of v2, I get the following memory footprint: 
 
-2bits/int * 100int/puzzle * 100,000puzzles = 20,000,000 bits = 20Mb or 2.5MB. Therefore, all my puzzles will be able to live within the L3 cache (24MiB across one instance), meaning that I can access data faster as I wouldn't have to travel to RAM.
+32bits/row * 10row + 32bits/column * 10column = 640 bits/puzzle
+
+640 bits/puzzle * 100,000puzzles = 64Mib = 8MB
+
+As discussed before, my L3 cache is able to store 24MiB = 25MB. Therefore, my entire 100,000 puzzle set can fit within the L3 cache, a few times over actually! The impact being that I wouldn't have to waste time going to RAM to source data, as it will always be within the L3 cache, at worst.
 
 Furthermore, I also wanted to see whether I could eliminate branches by making the program branch-less via bitwise operators. Doing so would reduce branch misses and CPU stalls, leading to a faster overall execution time. However, I'd have to see how this would work, given I'd need to represent each digit with 2 bits.
 
