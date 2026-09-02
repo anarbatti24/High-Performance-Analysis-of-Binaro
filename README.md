@@ -4,11 +4,11 @@
 
 Binaro, aka Takuzu, is a puzzle game. You can think about it like Sudoku's (cooler) cousin. You have a 10x10 grid with either 1s, 0s or unknown boxes. The rules are simple, each row/column must have at most 5 ones and 5 zeros and there cannot be 3 consecutive digits, so '111', '000' are not permitted (same for columns).
 
-Over the past few months, Binaro has become my favorite pastime on the train to and from university. I solve each puzzle with the sole goal of doing so as fast as possible. My record thus far is 0:57 seconds. 
+Over the past few months, Binaro has become my favorite pastime on the train to and from university. I solve each puzzle with the sole goal of finishing as fast as possible. My record thus far is 57 seconds. 
 
-During this time, I've also become increasingly interested in High Performance Computing (HPC) and understanding how the software we write interacts with hardware and how we can optimize our code to extract maximum performance from the hardware it runs on.
+During this time, I've also become increasingly interested in High Performance Computing (HPC) and understanding how the software that is written interacts with hardware and how code can be optimized to extract maximum performance from the hardware it runs on.
 
-Merging these two ideas was a very interesting thought to me. Computers do things very fast and so I began thinking about creating a solver with the purpose of getting through 100,000 Binaro puzzles as quickly as possible. 
+I decided to explore this further by creating a 'solver' with the purpose of getting through 100,000 Binaro puzzles as quickly as possible. 
 
 And from that, I started my **High Performance Analysis of Binaro**
 
