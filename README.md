@@ -1,7 +1,7 @@
 
 **Introduction**
 
-Binaro, aka Takuzu, is a puzzle game. You can think about it like Sudoku's (cooler) cousin. You have a 10x10 grid with either 1s, 0s or unknown boxes. The rules are simple, each row/column must have at most 5 ones and 5 zeros and there cannot be 3 consecutive digits, so 111, 000 are not permitted (same for columns).
+Binaro, aka Takuzu, is a puzzle game. You can think about it like Sudoku's (cooler) cousin. You have a 10x10 grid with either 1s, 0s or unknown boxes. The rules are simple, each row/column must have at most 5 ones and 5 zeros and there cannot be 3 consecutive digits, so '111', '000' are not permitted (same for columns).
 
 Over the past few months, Binaro has become my favorite pastime on the train to and from university. I solve each puzzle with the sole goal of doing so as fast as possible. My record thus far is 0:57 seconds. 
 
