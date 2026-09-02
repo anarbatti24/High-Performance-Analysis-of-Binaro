@@ -21,7 +21,7 @@ The project itself has been split into 5 versions (planned):
 
 **v1 (complete):**
 
-Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmark for the project. Information regarding the performance of v1 can be found in *Information.txt*, located in the root folder. As a brief summary, however, v1 took around 2.8 seconds to solve 100,000 puzzles, with an average solve time of 28μs/puzzle. It had 201,968,544 branch misses in 3,609134,000 branches and had 14,869,100,397 instructions in 8,405,397,478 cycles, for an instructions per cycle (IpC) ratio of around 1.77.
+Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmark for the project. Information regarding the performance of v1 can be found in *Information.txt*, located in the root folder. As a brief summary, however, v1 took around 2.8 seconds to solve 100,000 puzzles, with an **average solve time of 28μs/puzzle** (A little faster than my 57 seconds, to say the least). It had 201,968,544 branch misses in 3,609134,000 branches and had 14,869,100,397 instructions in 8,405,397,478 cycles, for an instructions per cycle (IpC) ratio of around 1.77.
 
 Additionally, because of how I created my data structures, each puzzle takes up 400 bytes of memory, with the total simulation taking up 40MB 
 (400 bytes/puzzle * 100,000 puzzles).
