@@ -72,4 +72,4 @@ I expect to see vastly lower (if any) cache miss rates, fewer cycles required to
 
 1. **perf** was used to profile the different versions.
 2. The 100,000 puzzle set was generated once, all versions solved the same set of 100,000 puzzles.
-3. A constant CPU clock of 2.1GHz on the P-cores and 1.5 on the E-Cores was set for all runs.
+3. A constant CPU frequency of 2.1GHz on the P-cores and 1.5 on the E-Cores was set for all runs. (Arbitarily chosen. I realized after completing v1 that I hadn't controlled the frequency so I just chose the frequencies that had been recorded for that run.)
