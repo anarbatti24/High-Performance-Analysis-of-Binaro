@@ -28,9 +28,11 @@ Version 2 uses optimized data structures to store data, so instead of having std
 
 As discussed before, the total memory footprint of the simulation is 40MB. My L3 cache is able to store 24MiB of data, therefore, the bulk of my puzzles will need to live in RAM and will need to get fetched into L1/L2/L3. Using **perf** for profiling, I found that my *llc_miss_rate* (last-level cache miss rate) accounted for 70.5% of total *LLC-Loads*. This means that 70.5% of the time, when my CPU resorted to looking in the L3 cache for data, it couldn't find it and therefore had to make the trip to RAM, a very slow process (comparatively).
 
-With the optimization explain in the first line of v2, I get the following memory footprint: 
+With the optimization explained in the first line of v2, I get the following memory footprint: 
 
 2bits/int * 100int/puzzle * 100,000puzzles = 20,000,000 bits = 20Mb or 2.5MB. Therefore, all my puzzles will be able to live within the L3 cache (24MiB across one instance), meaning that I can access data faster as I wouldn't have to travel to RAM.
+
+Furthermore, I also wanted to see whether I could eliminate branches by making the program branch-less via bitwise operators. Doing so would reduce branch misses and CPU stalls, leading to a faster overall execution time. However, I'd have to see how this would work, given I'd need to represent each digit with 2 bits.
 
 
 **v3 (planned):**
@@ -42,11 +44,13 @@ Once I get to this point, I'll be very interested to see how the threads (P-thre
 
 **v4 (planned):** 
 
-Given the nature of Binaro, different rows can be solved independently, meaning that if, in Row 1 and Row 5, I have '00' I know that I should complete them as Row 1,3 = '1001.' Therefore, I give a Single Instruction and alter Multiple Data (SIMD) and can use the AVX instruction set. The YMM register, which is where AVX instructions are carried out, is able to hold 256 bits of information. Used in tandem with the optimization detailed in v2, 1 puzzle will be able to fit within a YMM register, meaning that SIMD (seems to be), a sound optimization. 
+Given the nature of Binaro, different rows can be solved independently, meaning that if, in Row 1 and Row 5, I have '00' I know that I should complete them as Row 1,3 = '1001.' Therefore, I give a Single Instruction and alter Multiple Data (SIMD) and can use the AVX instruction set via the <immintrin.h> library. The YMM register, which is where AVX instructions are carried out, is able to hold 256 bits of information. Used in tandem with the optimization detailed in v2, 1 puzzle will be able to fit within a YMM register, meaning that SIMD (seems to be), a sound optimization.
 
 **v5 (planned):**
 
 The prior versions explored how each individual optimization benchmarks against v1. Therefore, in v5, I'll integrate all optimizations/techniques together to see the overall impact on factors such as: run-time, cycles, instructions, branch-misses and load-misses.
+
+I expect to see vastly lower (if any) cache miss rates, fewer cycles required to get through the simulation (leading to a higher IpC) and perhaps a lower number of branches and branch misses (if I implement using bitwise operators).
 
 **Other Information:**
 
