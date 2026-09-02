@@ -21,7 +21,11 @@ Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmar
 Additionally, because of how I created my data structures, each puzzle takes up 400 bytes of memory, with the total simulation taking up 40MB 
 (400 bytes/puzzle * 100,000 puzzles).
 
-As discussed before, the total memory footprint of the simulation is 40MB. My L3 cache is able to store 24MiB of data, therefore, the bulk of my puzzles will need to live in RAM and will need to get fetched into L1/L2/L3. Using **perf** for profiling, I found that my *llc_miss_rate* (last-level cache miss rate) accounted for 70.5% of total *LLC-Loads*. This means that 70.5% of the time, when my CPU resorted to looking in the L3 cache for data, it couldn't find it and therefore had to make the trip to RAM, a very slow process (comparatively).
+As discussed above, the total memory footprint of the simulation is 40MB. My L3 cache is able to store 24MiB of data, therefore, the bulk of my puzzles will need to live in RAM and will need to get fetched into L1/L2/L3. Using **perf** for profiling, I found that my *llc_miss_rate* (last-level cache miss rate) accounted for 70.5% of total *LLC-Loads*. This means that 70.5% of the time, when my CPU resorted to looking in the L3 cache for data, it couldn't find it and therefore had to make the trip to RAM, a very slow process (comparatively). **v2 addresses this.**
+
+Additionally, v1 solves each puzzle sequentially. It must solve puzzle 1 before going to puzzle 2 and so on. Given that each binaro grid can be solved independently of other grids, it makes sense to parallelize the operation of solving to reduce runtime. **v3 addresses this.**
+
+Lastly, v1 steps through rows/columns sequentially. In other words, I would first need to input data into row 1 and then input data into row 5, even if the same rule could be applied to both. The downside being that each row/column is doing a lot of waiting and we're burning through a lot of clock cycles, ultimately resulting in a higher overall runtime. **v4 addresses this.**
 
 
 **v2 (in progress):**
@@ -34,27 +38,29 @@ With the optimization explained in the first line of v2, I get the following mem
 
 640 bits/puzzle * 100,000puzzles = 64Mib = 8MB
 
-As discussed before, my L3 cache is able to store 24MiB = 25MB. Therefore, my entire 100,000 puzzle set can fit within the L3 cache, a few times over actually! The impact being that I wouldn't have to waste time going to RAM to source data, as it will always be within the L3 cache, at worst.
+As discussed before, my L3 cache is able to store 24MiB = 25MB. Therefore, my entire 100,000 puzzle set can fit within the L3 cache, a few times over actually! The impact being that I wouldn't have to waste time going to RAM to source data, as it will always be within the L3 cache, at worst. Therefore, I would expect to see runtime drop and a lower llc_miss_rate, as I, theoretically, wouldn't need to venture into RAM for any reason.
 
-Furthermore, I also wanted to see whether I could eliminate branches by making the program branch-less via bitwise operators. Doing so would reduce branch misses and CPU stalls, leading to a faster overall execution time. However, I'd have to see how this would work, given I'd need to represent each digit with 2 bits.
+Another optimization I wanted to implement in v2 is using bitwise operators to make the program branch-less. Doing so would drastically reduce branch misses and CPU stalls, leading to a faster overall runtime.
 
 
 **v3 (planned):**
 
 Version 3 will use multi-threading to parallelize puzzle completion. My CPU is the Intel i7-13700H, which has 6 performance cores and 8 efficiency cores. The P-cores have hyper-threading so there are 12 P-threads and the E-cores don't have hyper-threading so there are 8 E-threads. Given that spinning up a thread takes a few milliseconds (too slow), I was going to implement a thread pool and have idle threads pull and solve puzzles as required.
 
-Once I get to this point, I'll be very interested to see how the threads (P-thread vs. E-thread) perform and the optimal 'division.' Maybe using just the 12 P-threads is faster than using them with the 8 E-threads
+Once I get to this point, I'll be very interested to see how the threads (P-thread vs. E-thread) perform and the optimal 'division.' Maybe using just the 12 P-threads is faster than using them with the 8 E-threads...
 
 
 **v4 (planned):** 
 
-Given the nature of Binaro, different rows can be solved independently, meaning that if, in Row 1 and Row 5, I have '00' I know that I should complete them as Row 1,3 = '1001.' Therefore, I give a Single Instruction and alter Multiple Data (SIMD) and can use the AVX instruction set via the <immintrin.h> library. The YMM register, which is where AVX instructions are carried out, is able to hold 256 bits of information. Used in tandem with the optimization detailed in v2, 1 puzzle will be able to fit within a YMM register, meaning that SIMD (seems to be), a sound optimization.
+Given the nature of Binaro, different rows can have values inputted independently, meaning that if, in Row 1 and Row 5, I have '00,' I know that I should complete them as Row 1,5 = '1001,' in the same clock cycle. Point being, that I can give a **S**ingle **I**nstruction and alter **M**ultiple **D**ata **(SIMD)**. To implement this, I can use the AVX instruction set via the <immintrin.h> library. The YMM register, which is where AVX instructions are carried out, is able to hold 256 bits of information. Used in tandem with the optimization detailed in v2, I would be able to fit the bulk of the 32bit row/column integers within a single YMM register, meaning that SIMD would seem (on paper) to have a drastic impact on runtime.
+
 
 **v5 (planned):**
 
 The prior versions explored how each individual optimization benchmarks against v1. Therefore, in v5, I'll integrate all optimizations/techniques together to see the overall impact on factors such as: run-time, cycles, instructions, branch-misses and load-misses.
 
 I expect to see vastly lower (if any) cache miss rates, fewer cycles required to get through the simulation (leading to a higher IpC) and perhaps a lower number of branches and branch misses (if I implement using bitwise operators).
+
 
 **Other Information:**
 
