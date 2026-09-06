@@ -11,8 +11,8 @@
 /**
  * Function to read from file into grid
  *
- * @param file 	The file we're reading from: 'binaro.txt'
- * @param grid 	The grid we're populating
+ * @param file 		The file we're reading from: 'binaro.txt'
+ * @param puzzles 	The puzzleSet we're populating
  **/
 //void readFromFile(std::ifstream& file, Grid& grid);
 void readFromFile(std::ifstream& file, PuzzleSet& puzzles);

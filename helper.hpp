@@ -6,12 +6,29 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstdint>
+#include <bit>
+#include <chrono>
 
 constexpr int ROWS = 10;
 constexpr int COLS = 10;
 
 using Grid = std::array<std::array<int, COLS>, ROWS>;
 using PuzzleSet = std::vector<Grid>;
+
+struct Line {
+
+	uint16_t ones = 0b0;
+	uint16_t zeros = 0b0;
+};
+
+struct GridV2 {
+
+	Line rows[10];
+	Line cols[10];
+};
+
+using PuzzleSetV2 = std::vector<GridV2>;
 
 /**
  * @brief Function to print the grid

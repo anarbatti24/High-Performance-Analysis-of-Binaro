@@ -42,4 +42,53 @@ TIME TAKEN: 2849539961ns
 
        3.852894000 seconds user
        0.090997000 seconds sys
+
+==========================================================================================================
+
+VERSION 2
+
+==========================================================================================================
+anarbatti24@anarbatti24-laptop:~/Programs/BinaroSolver$ ./run.sh ./v2/solverv2
+
+REPORT
+==========================================================================================================
+CORRECT LINES: 1100000/1100000
+INCORRECT LINES: 0/1100000
+TIME TAKEN: 762870us
+
+ Performance counter stats for './v2/solverv2':
+
+                35      context-switches                 #     19.0 cs/sec  cs_per_second     
+                 4      cpu-migrations                   #      2.2 migrations/sec  migrations_per_second
+             4,663      page-faults                      #   2526.6 faults/sec  page_faults_per_second
+          1,845.54 msec task-clock                       #      1.0 CPUs  CPUs_utilized       
+         1,807,152      cpu_core/L1-dcache-load-misses/  #      nan %  l1d_miss_rate            (30.59%)
+     <not counted>      cpu_core/L1-icache-load-misses/  #      nan %  l1i_miss_rate          
+           876,267      cpu_core/LLC-loads/              #     81.2 %  llc_miss_rate            (15.38%)
+        25,055,785      cpu_core/branch-misses/          #      1.1 %  branch_miss_rate         (23.12%)
+     2,181,333,858      cpu_core/branches/               #   1182.0 M/sec  branch_frequency     (30.78%)
+     3,830,928,922      cpu_core/cpu-cycles/             #      2.1 GHz  cycles_frequency       (38.46%)
+    13,089,224,965      cpu_core/instructions/           #      3.4 instructions  insn_per_cycle  (46.13%)
+     3,151,752,872      cpu_core/dTLB-loads/             #      0.0 %  dtlb_miss_rate           (45.99%)
+       112,972,595      cpu_atom/L1-icache-load-misses/  #     17.0 %  l1i_miss_rate            (0.02%)
+         6,346,419      cpu_atom/LLC-loads/              #     11.7 %  llc_miss_rate            (0.07%)
+        15,364,097      cpu_atom/branch-misses/          #      2.6 %  branch_miss_rate         (0.13%)
+       738,366,910      cpu_atom/branches/               #    400.1 M/sec  branch_frequency     (0.16%)
+     2,723,430,818      cpu_atom/cpu-cycles/             #      1.5 GHz  cycles_frequency       (0.22%)
+     4,872,514,095      cpu_atom/instructions/           #      1.8 instructions  insn_per_cycle  (0.22%)
+     1,302,224,775      cpu_atom/dTLB-loads/             #      0.0 %  dtlb_miss_rate           (0.12%)
+             TopdownL1 (cpu_core)                        #      8.7 %  tma_bad_speculation    
+                                                         #     17.9 %  tma_frontend_bound       (61.27%)
+                                                         #      6.9 %  tma_backend_bound      
+                                                         #     66.4 %  tma_retiring             (61.27%)
+             TopdownL1 (cpu_atom)                        #     36.5 %  tma_backend_bound        (0.01%)
+                                                         #      nan %  tma_frontend_bound       (0.00%)
+                                                         #      nan %  tma_bad_speculation    
+                                                         #      nan %  tma_retiring             (0.00%)
+
+       1.856457149 seconds time elapsed
+
+       1.797516000 seconds user
+       0.049986000 seconds sys
+
 ==========================================================================================================
