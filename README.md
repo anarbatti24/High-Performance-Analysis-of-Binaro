@@ -67,9 +67,13 @@ The prior versions explored how each individual optimization benchmarks against 
 I expect to see vastly lower (if any) cache miss rates, fewer cycles required to get through the simulation (leading to a higher IpC) and perhaps a lower number of branches and branch misses (if I implement using bitwise operators).
 
 
-**Other Information:**
+**Results**
 -----------------------------------------------------------
 
-1. **perf** was used to profile the different versions.
-2. The 100,000 puzzle set was generated once, all versions solved the same set of 100,000 puzzles.
-3. A constant CPU frequency of 2.1GHz on the P-cores and 1.5 on the E-Cores was set for all runs. (Arbitarily chosen. I realized after completing v1 that I hadn't controlled the frequency so I just chose the frequencies that had been recorded for that run.)
+Tabular data can be viewed through 'Information.txt'
+
+Graphical Results are below as follows:
+
+<p align="center">
+  <img src="/home/anarbatti24/Programs/BinaroSolver/images/v1_vs_v2.png" width="900">
+</p>
