@@ -72,8 +72,8 @@ I expect to see vastly lower (if any) cache miss rates, fewer cycles required to
 
 Tabular data can be viewed through 'Information.txt'
 
-Graphical Results are below as follows:
+Graphical Results are below as follows (Updated as new versions are benchmarked):
 
 <p align="center">
-  <img src="/home/anarbatti24/Programs/BinaroSolver/images/v1_vs_v2.png" width="900">
+  <img src="/images/v1_vs_v2.png" width="900">
 </p>
