@@ -13,6 +13,18 @@ I decided to explore this further by creating a 'solver' with the purpose of get
 And from that, I started my **High Performance Analysis of Binaro**
 
 
+**Results**
+-----------------------------------------------------------
+
+Tabular data can be viewed through 'Information.txt'
+
+Graphical Results are below as follows (Updated as new versions are benchmarked):
+
+<p align="center">
+  <img src="/images/v1_vs_v2.png" width="900">
+</p>
+
+
 **Project Information and Direction**
 -----------------------------------------------------------
 
@@ -28,24 +40,58 @@ Additionally, because of how I created my data structures, each puzzle takes up 
 
 As discussed above, the total memory footprint of the simulation is 40MB. My L3 cache is able to store 24MiB of data, therefore, the bulk of my puzzles will need to live in RAM and will need to get fetched into L1/L2/L3. Using **perf** for profiling, I found that my *llc_miss_rate* (last-level cache miss rate) accounted for 70.5% of total *LLC-Loads*. This means that 70.5% of the time, when my CPU resorted to looking in the L3 cache for data, it couldn't find it and therefore had to make the trip to RAM, a very slow process (comparatively). **v2 addresses this.**
 
-Additionally, v1 solves each puzzle sequentially. It must solve puzzle 1 before going to puzzle 2 and so on. Given that each binaro grid can be solved independently of other grids, it makes sense to parallelize the operation of solving to reduce runtime. **v3 addresses this.**
+Additionally, v1 solves each puzzle sequentially. It must solve puzzle 1 before going to puzzle 2 and so on. Given that each binaro grid can be solved independently of other grids, it makes sense to parallelize the operation of solving to reduce total solve time across 100'000 puzzles. **v3 addresses this.**
 
 Lastly, v1 steps through rows/columns sequentially. In other words, I would first need to input data into row 1 and then input data into row 5, even if the same rule could be applied to both. The downside being that each row/column is doing a lot of waiting and we're burning through a lot of clock cycles, ultimately resulting in a higher overall runtime. **v4 addresses this.**
 
 
-**v2 (in progress):**
+**v2 (complete):**
 
-Version 2 uses optimized data structures to store data, so instead of having std::array<std::array<int, 10>, 10> holding my grids, I was thinking perhaps I could store each row/column as a single 32 bit integer, uint32_t.
+Version 2 introduced a very important question. How can I shrink the amount of memory needed to represent the puzzles?
 
-With the optimization explained in the first line of v2, I get the following memory footprint: 
+Please not the terminology used in this section:
 
-32bits/row * 10row + 32bits/column * 10column = 640 bits/puzzle
+*PuzzleSet* - A data structure that holds all 100'000 puzzles
+*Grid*      - A data structure that holds just 1 puzzle
+*Line*      - A row or column of a grid
+*ones Division* - A data structure that holds just the bits that are set to '1' in a line
+*zeros Division* - A data structure that holds just the bits that are set to '0' in a line
+*cell* - A singular bit in the Line/Grid
 
-640 bits/puzzle * 100,000puzzles = 64Mib = 8MB
+My plan was to use a single uint16_t to represent each Line in a Grid, that way, I could reduce the amount of memory needed and I can utilize bitwise operators to make solving lines faster. Lo-and-behold, this idea didn't work because in a Grid, I need to represent 3 states, minimum. 1s 0s and unknowns. Therefore, I would need at least 2 bits per cell. The problem I found with this was that doing bitwise math would be difficult as now I'd have to find some way to chunk the 2 bits together to treat them as 1...not fun.
 
-As discussed before, my L3 cache is able to store 24MiB = 25MB. Therefore, my entire 100,000 puzzle set can fit within the L3 cache, a few times over actually! The impact being that I wouldn't have to waste time going to RAM to source data, as it will always be within the L3 cache, at worst. Therefore, I would expect to see runtime drop and a lower llc_miss_rate, as I, theoretically, wouldn't need to venture into RAM for any reason.
+Seeing as I needed to represent 3 states, I thought that using a base 3 number would work out perfectly, but I quickly found out that 'bitwise' operators for base 3 numbers include the modulo operator, which is notoriously slow.
 
-Another optimization I wanted to implement in v2 is using bitwise operators to make the program branch-less. Doing so would drastically reduce branch misses and CPU stalls, leading to a faster overall runtime.
+The idea of 2 bits per cell still seemed like the best option to me, but it was clear that I couldn't just do it all in one data structure i.e. the uint32_t. Therefore, I figured that splitting up a Line into a ones Division and zeros Divison might satisfy all constraints. For starters, I would be able to shrink memory footprint enormously and use bitwise operators.
+
+Suppose I have the line: 0b10x0110x00
+
+The corresponding ones Division is: 0b1000110000
+The corresponding zeros Division is: 0b0101001011
+
+So now, ultimately, I just need to employ bitwise math to calculate the rules for me (consecutive '11' and gaps '1x1') across both divisions. And because of bit-parallelism, any satisfying bits will all be found at the same time (within the same Line).
+
+A problem that I had with v1 was that I was using a nested vector. The inner vector (rows) would have good cache locality as it would be a contiguous chunk in memory, but the different rows (outer vector) would have poor cache locality as its not guaranteed that where they might reside in memory relative to the others.
+
+Therefore, in v2, I decided to make Lines for rows and columns and store those in arrays. Therefore, each row is a contiguous block in memory and so is each column, therefore, I get 20 Lines per puzzle.
+
+If we calculate the total memory footprint now, we get: 32 bits/Line * 20 Line/Grid * 100'000 Grid/PuzzleSet = 8 MB/PuzzleSet (down from 40 MB/Puzzleset in v1)
+
+In binaro, rows can be solved independently of each other and the same can be said for columns. But, rows are needed to solve columns and vice-versa. Therefore, when I solve bits in a row/column, I need to send those bits to their respective columns/rows. 
+
+Let's take rows for example. Say I have identified the following new bits in row 2: 0b10x01x0x01
+
+The formula I concluded was that row bitshift = column and row number = column bitshift.
+
+In other words, column[row bit shift] |= 1 << rowNumber;
+
+Let's solve the example above:
+
+first, I start by isolating the highest bit in the Line, so that I can send it, therefore, I get: 0b10000000
+
+Therefore, I need to send this to column 9 with a bitshift of 2.
+
+A mistake that I made when officially benchmarking was sending the entire line through everytime, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, unde standard conditions dropped to **4 us/puzzle** (was 8 us/puzzle before).
 
 
 **v3 (planned):**
@@ -67,13 +113,3 @@ The prior versions explored how each individual optimization benchmarks against 
 I expect to see vastly lower (if any) cache miss rates, fewer cycles required to get through the simulation (leading to a higher IpC) and perhaps a lower number of branches and branch misses (if I implement using bitwise operators).
 
 
-**Results**
------------------------------------------------------------
-
-Tabular data can be viewed through 'Information.txt'
-
-Graphical Results are below as follows (Updated as new versions are benchmarked):
-
-<p align="center">
-  <img src="/images/v1_vs_v2.png" width="900">
-</p>
