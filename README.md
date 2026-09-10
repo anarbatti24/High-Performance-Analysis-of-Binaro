@@ -23,7 +23,7 @@ Graphical Results are below as follows (Updated as new versions are benchmarked)
 <p align="center">
   <img src="/images/v1_vs_v2.png" width="900">
 </p>
-
+Please note, I made a mistake while making the graphic, the "Solve Time" graphic should have units of (microseconds/puzzle) rather than just seconds.
 
 **Project Information and Direction**
 -----------------------------------------------------------
@@ -33,7 +33,7 @@ The project itself has been split into 5 versions (planned):
 
 **v1 (complete):**
 
-Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmark for the project. Information regarding the performance of v1 can be found in *Information.txt*, located in the root folder. As a brief summary, however, v1 took around 2.8 seconds to solve 100,000 puzzles, with an **average solve time of 28μs/puzzle** (A little faster than my 57 seconds, to say the least). It had 201,968,544 branch misses in 3,609134,000 branches and had 14,869,100,397 instructions in 8,405,397,478 cycles, for an instructions per cycle (IpC) ratio of around 1.77.
+Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmark for the project. Information regarding the performance of v1 can be found in *Information.txt*, located in the root folder. As a brief summary, however, v1 took around 3.0 seconds to solve 100,000 puzzles, with an **average solve time of 30μs/puzzle** (A little faster than my 57 seconds, to say the least). It had 201,968,544 branch misses in 3,609134,000 branches and had 14,869,100,397 instructions in 8,405,397,478 cycles, for an instructions per cycle (IpC) ratio of around 1.77.
 
 Additionally, because of how I created my data structures, each puzzle takes up 400 bytes of memory, with the total simulation taking up 40MB 
 (400 bytes/puzzle * 100,000 puzzles).
@@ -52,17 +52,22 @@ Version 2 introduced a very important question. How can I shrink the amount of m
 Please not the terminology used in this section:
 
 *PuzzleSet* - A data structure that holds all 100'000 puzzles
+
 *Grid*      - A data structure that holds just 1 puzzle
+
 *Line*      - A row or column of a grid
+
 *ones Division* - A data structure that holds just the bits that are set to '1' in a line
+
 *zeros Division* - A data structure that holds just the bits that are set to '0' in a line
+
 *cell* - A singular bit in the Line/Grid
 
 My plan was to use a single uint16_t to represent each Line in a Grid, that way, I could reduce the amount of memory needed and I can utilize bitwise operators to make solving lines faster. Lo-and-behold, this idea didn't work because in a Grid, I need to represent 3 states, minimum. 1s 0s and unknowns. Therefore, I would need at least 2 bits per cell. The problem I found with this was that doing bitwise math would be difficult as now I'd have to find some way to chunk the 2 bits together to treat them as 1...not fun.
 
 Seeing as I needed to represent 3 states, I thought that using a base 3 number would work out perfectly, but I quickly found out that 'bitwise' operators for base 3 numbers include the modulo operator, which is notoriously slow.
 
-The idea of 2 bits per cell still seemed like the best option to me, but it was clear that I couldn't just do it all in one data structure i.e. the uint32_t. Therefore, I figured that splitting up a Line into a ones Division and zeros Divison might satisfy all constraints. For starters, I would be able to shrink memory footprint enormously and use bitwise operators.
+The idea of 2 bits per cell still seemed like the best option to me, but it was clear that I couldn't just do it all in one data structure i.e. the uint32_t. Therefore, I figured that splitting up a Line into a ones Division and zeros Division might satisfy all constraints. For starters, I would be able to shrink memory footprint enormously and use bitwise operators.
 
 Suppose I have the line: 0b10x0110x00
 
@@ -91,7 +96,7 @@ first, I start by isolating the highest bit in the Line, so that I can send it, 
 
 Therefore, I need to send this to column 9 with a bitshift of 2.
 
-A mistake that I made when officially benchmarking was sending the entire line through everytime, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, unde standard conditions dropped to **4 us/puzzle** (was 8 us/puzzle before).
+A mistake that I made when officially benchmarking was sending the entire line through every time, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, under standard conditions, dropped to **4 μs/puzzle** (was 8 μs/puzzle before, as reported on my resume).
 
 
 **v3 (planned):**
