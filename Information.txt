@@ -3,8 +3,8 @@
  STANDARD RUN CONDITIONS:
 	1. Each version had 20, consecutive trials, comprising of the same dataset (same 100,000 puzzles across all trials of all versions)
 	2. Each version was compiled using the -O1 flag, strictly
-	3. The program is fixed to run on CPU 4 of the Intel i7-13700H (A performance core)
-	3. The CPU frequency policy of CPU 4 was constrained to 2.1GHz (arbitrarily chosen, but is a safe frequency to avoid thermal throttling, or worse...I can't afford a new laptop)
+	3. The program is fixed to run on CPU 0 of the Intel i7-13700H (A performance core)
+	3. The CPU frequency policy of CPU 0 was constrained to 2.1GHz (arbitrarily chosen, but found to be the 'natural' frequency of the CPU when it solves)
 	4. Run using the command: ./run.sh ./vX/solvervX
 
  ======================================================================================================================
@@ -49,7 +49,7 @@
 	2983858.839
 	2979217.025
 
-	Average/puzzle (us) = 30;
+	Average/puzzle (us) ≈ 30;
 
  ======================================================================================================================
  ======================================================================================================================
@@ -93,6 +93,6 @@
 	769988
 	763284
 
-	Average/puzzle (us) = 8;
+	Average/puzzle (us) ≈ 8;
 
  ======================================================================================================================
