@@ -5,9 +5,8 @@ set -e
 P_FREQ=2100000
 E_FREQ=1500000
 
-# P-core with the highest advertised maximum frequency.
-# On your i7-13700H, CPU 4 belongs to a 5.0 GHz P-core.
-BENCH_CPU=4
+# CPU 0 chosen semi-arbitrarily. I benchmarked against other CPUs and found that Core 0 was consistently faster, not entirely sure why though
+BENCH_CPU=0
 
 if [ -z "$1" ]; then
     exit 1
