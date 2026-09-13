@@ -1,5 +1,7 @@
 #include "/home/anarbatti24/Programs/BinaroSolver/v1/helperv1.hpp"
 #include <chrono>
+#include <fcntl.h>
+#include <unistd.h>
 
 //Grid, ROWS, COLS defined in 'helper.hpp' located in root
 
@@ -22,9 +24,16 @@ int main() {
 	file.close();
 
 
+	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
 
 	auto start = std::chrono::steady_clock::now();
-		
+	
+	
+	if (perf_fd != -1) {
+		write(perf_fd, "enable\n", 7);
+	}
+
+
 	for (auto& grid : puzzles) {
 
 		while (!done(grid))  {
@@ -36,6 +45,13 @@ int main() {
 			iterateCols(grid);
 			iterateRows(grid);
 		}
+	}
+
+
+
+	if (perf_fd != -1) {
+	    write(perf_fd, "disable\n", 8);
+	    close(perf_fd);
 	}
 
 	auto stop = std::chrono::steady_clock::now();

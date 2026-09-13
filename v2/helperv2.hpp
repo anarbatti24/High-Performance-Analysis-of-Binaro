@@ -6,7 +6,6 @@
 #include <fstream>
 #include "../helper.hpp"
 
-constexpr uint8_t offset = 9;
 
 /**
  * @brief Function to read from the file

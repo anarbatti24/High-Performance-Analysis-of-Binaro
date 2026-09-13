@@ -96,37 +96,51 @@ void solveRows(GridV2& grid) {
 		// At this point, I've got a ones-division line and a zeros-division line. Now, I need to isolate each bit in each division and send it to its corresponding column.
 		
 		// Transmitting the changed row bits to their respective columns for the ones-division
-		while (newOnes != 0) {
-		
-		
-//			std::cout << "sending ones columns" << '\n';
-			int bitShift = 31 - __builtin_clz(newOnes);
-			uint16_t isolatedMask = 1 << bitShift;
-			
-			//std::cout << "Ones rows: " << bitShift << '\n';
-			grid.cols[offset - bitShift].ones |= (1 << r);
+// 		while (newOnes != 0) {
+//
+//
+// //			std::cout << "sending ones columns" << '\n';
+// 			int bitShift = 31 - __builtin_clz(newOnes);
+// 			uint16_t isolatedMask = 1 << bitShift;
+//
+// 			//std::cout << "Ones rows: " << bitShift << '\n';
+// 			grid.cols[offset - bitShift].ones |= (1 << r);
+//
+// 			newOnes ^= isolatedMask;
+//
+// 		}
 
-			newOnes ^= isolatedMask;
 
+		while (newOnes) {
+		    unsigned bitShift = std::countr_zero(newOnes);
+		    newOnes &= newOnes - 1;
+
+		    grid.cols[offset - bitShift].ones |= 1 << r);
 		}
-
 
 		// Transmitting the changed row bits to their respective columns for the zeros-division
-		while (newZeros != 0) {
+// 		while (newZeros != 0) {
+//
+// //			std::cout << "sending zeros columns" << '\n';
+// 			int bitShift = 31 - __builtin_clz(newZeros);
+// 			uint16_t isolatedMask = 1 << bitShift;
+//
+//
+//
+// 			//std::cout << "zeros rows: " << bitShift << '\n';
+// 			grid.cols[offset - bitShift].zeros |= (1 << r);
+//
+// 			newZeros ^= isolatedMask;
+//
+// 		}
 
-//			std::cout << "sending zeros columns" << '\n';
-			int bitShift = 31 - __builtin_clz(newZeros);
-			uint16_t isolatedMask = 1 << bitShift;
 
+		while (newZeros) {
+		    unsigned bitShift = std::countr_zero(newZeros);
+		    newZeros &= newZeros - 1;
 
-
-			//std::cout << "zeros rows: " << bitShift << '\n';
-			grid.cols[offset - bitShift].zeros |= (1 << r);
-
-			newZeros ^= isolatedMask;
-
+		    grid.cols[offset - bitShift].zeros |= (1 << r);
 		}
-		
 	}
 }
 
@@ -176,32 +190,47 @@ void solveCols(GridV2& grid) {
 		// At this point, I've got a ones-division line and a zeros-division line. Now, I need to isolate each bit in each division and send it to its corresponding column.
 		
 		// Transmitting the changed row bits to their respective columns for the ones-division
-		while (newOnes != 0) {
-				
-			int bitShift = 31 - __builtin_clz(newOnes);
-			uint16_t isolatedMask = 1 << bitShift;
-			
-			
-			//std::cout << "Ones cols: " << bitShift << '\n';
-			grid.rows[offset - bitShift].ones |= (1 << c);
+		// while (newOnes != 0) {
+		//
+		// 	int bitShift = 31 - __builtin_clz(newOnes);
+		// 	uint16_t isolatedMask = 1 << bitShift;
+		//
+		//
+		// 	//std::cout << "Ones cols: " << bitShift << '\n';
+		// 	grid.rows[offset - bitShift].ones |= (1 << c);
+		//
+		// 	newOnes ^= isolatedMask;
+		//
+		// }
+		//
 
-			newOnes ^= isolatedMask;
+		while (newOnes) {
+		    unsigned bitShift = std::countr_zero(newOnes);
+		    newOnes &= newOnes - 1;
 
+		    grid.rows[offset - bitShift].ones |= (1 << c);
 		}
 
 
 		// Transmitting the changed row bits to their respective columns for the zeros-division
-		while (newZeros != 0) {
+		// while (newZeros != 0) {
+		//
+		// 	int bitShift = 31 - __builtin_clz(newZeros);
+		// 	uint16_t isolatedMask = 1 << bitShift;
+		//
+		//
+		// 	//std::cout << "Zeros cols: " << bitShift << '\n';
+		// 	grid.rows[offset - bitShift].zeros |= (1 << c);
+		//
+		// 	newZeros ^= isolatedMask;
+		//
+		// }
 		
-			int bitShift = 31 - __builtin_clz(newZeros);
-			uint16_t isolatedMask = 1 << bitShift;
+		while (newZeros) {
+		    unsigned bitShift = std::countr_zero(newZeros);
+		    newZeros &= newZeros - 1;
 
-			
-			//std::cout << "Zeros cols: " << bitShift << '\n';
-			grid.rows[offset - bitShift].zeros |= (1 << c);
-
-			newZeros ^= isolatedMask;
-
+		    grid.rows[offset - bitShift].zeros |= (1 << c);
 		}
 	}
 }

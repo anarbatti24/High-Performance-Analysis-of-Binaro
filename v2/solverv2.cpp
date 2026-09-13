@@ -1,10 +1,15 @@
 #include "/home/anarbatti24/Programs/BinaroSolver/v2/helperv2.hpp"
 #include <bitset>
+#include <sys/prctl.h>
+#include <linux/prctl.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 
 int main() {
 
-	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/binaro.txt");
+	//CHANGED FILE
+	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/v2/test.txt");
 	std::ofstream outputFile("/home/anarbatti24/Programs/BinaroSolver/v2/solutionsv2.txt");
 	std::ifstream answerKeyFile("/home/anarbatti24/Programs/BinaroSolver/solutions.txt");
 
@@ -28,22 +33,40 @@ int main() {
 
 	//	std::cout << "Read in " << puzzles.size() << " puzzles" << '\n';
 
+	//std::cout << puzzles.size() << '\n';
+
+	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
 
 	auto start = std::chrono::steady_clock::now();
 	
-	for (int i = 0; i < 100000; i++) {
-		
-		while (!done(puzzles[i])) {
-	
-			solveRows(puzzles[i]);
-			solveCols(puzzles[i]);
-		}
+	if (perf_fd != -1) {
+		write(perf_fd, "enable\n", 7);
 	}
 
+	//prctl(PR_TASK_PERF_EVENTS_ENABLE);
+
+	// for (long j = 0; j < 10000; j++) {
+
+		for (int i = 0; i < puzzles.size(); i++) {
+			
+			while (!done(puzzles[i])) {
+		
+				solveRows(puzzles[i]);
+				solveCols(puzzles[i]);
+			}
+		}
+	// }
+
+	if (perf_fd != -1) {
+	    write(perf_fd, "disable\n", 8);
+	    close(perf_fd);
+	}
+
+	//prctl(PR_TASK_PERF_EVENTS_DISABLE);
 
 	auto stop = std::chrono::steady_clock::now();
 
-	auto elapsed = std::chrono::duration_cast<std::chrono::microseconds> (stop - start);
+	auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds> (stop - start);
 
 	//std::cout << "HERE" << '\n';
 	writeToFile(outputFile, puzzles);
