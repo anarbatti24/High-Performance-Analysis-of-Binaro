@@ -49,7 +49,7 @@ Lastly, v1 steps through rows/columns sequentially. In other words, I would firs
 
 Version 2 introduced a very important question. How can I shrink the amount of memory needed to represent the puzzles?
 
-Please not the terminology used in this section:
+Please note the terminology used in this section:
 
 *PuzzleSet* - A data structure that holds all 100'000 puzzles
 
