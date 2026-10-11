@@ -8,12 +8,16 @@
 #include <deque>
 #include <algorithm>
 
-extern std::deque<int> colQueue;
-extern std::deque<int> rowQueue;
+// extern std::deque<int> colQueue;
+// extern std::deque<int> rowQueue;
 constexpr int offset = 9;
 constexpr uint16_t lineMask = 0x3FF;
-extern std::array<bool, 10> inRowQueue;
-extern std::array<bool, 10> inColQueue;
+//extern std::array<bool, 10> inRowQueue;
+//extern std::array<bool, 10> inColQueue;
+extern uint16_t rowQueue;
+extern uint16_t colQueue;
+extern long rowEvaluations;
+extern long colEvaluations;
 
 /**
  * @brief Function to read from the file

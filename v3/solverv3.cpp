@@ -5,11 +5,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-
-std::deque<int> colQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-std::deque<int> rowQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-std::array<bool, 10> inRowQueue = {false};
-std::array<bool, 10> inColQueue = {false};
+uint16_t rowQueue;
+uint16_t colQueue;
+long rowEvaluations = 0;
+long colEvaluations = 0;
 
 int main() {
 
@@ -24,12 +23,9 @@ int main() {
 		return (-1);
 	}
 
-
-
 	PuzzleSetV2 puzzles = {};
 
 	readFromFile(file, puzzles);
-
 
 	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
 
@@ -43,29 +39,21 @@ int main() {
 	// Solving loop
 	for (int i = 0; i < puzzles.size(); i++) {
 
-		rowQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-		colQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-		
-		inRowQueue = {true, true, true, true, true, true, true, true, true, true};
-		inColQueue = {true, true, true, true, true, true, true, true, true, true};
+		rowQueue = lineMask;
+		colQueue = lineMask;
 
 		while (!done(puzzles[i])) {
 
-			if (rowQueue.empty() && colQueue.empty()) {
-			
-				rowQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-				colQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+			uint16_t eitherIsZero = !(rowQueue | colQueue);
+			uint16_t mask = lineMask & (-eitherIsZero);
 
-			}
+			rowQueue |= mask;
+			colQueue |= mask;
 
 			solveRows(puzzles[i]);
 			solveCols(puzzles[i]);
 		}
 	}
-
-
-
-
 
 	// Perf control
 	if (perf_fd != -1) {
@@ -73,14 +61,11 @@ int main() {
 		close(perf_fd);
 	}
 
-
 	auto stop = std::chrono::steady_clock::now();
 
 	auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds> (stop - start);
 
-	//std::cout << "HERE" << '\n';
 	writeToFile(outputFile, puzzles);
-
 
 	outputFile.close();
 
@@ -88,7 +73,9 @@ int main() {
 
 	validate(answerKeyFile, testFile);
 	std::cout << "TIME TAKEN: " << elapsed << '\n';
-
+	std::cout << "ROW EVALUATIONS: " << rowEvaluations << '\n';
+	std::cout << "COL EVALUATIONS: " << colEvaluations << '\n';
+	
 	file.close();
 	answerKeyFile.close();
 }

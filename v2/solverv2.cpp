@@ -5,6 +5,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+long rowEvaluations = 0;
+long colEvaluations = 0;
 
 int main() {
 
@@ -89,6 +91,9 @@ int main() {
 
 	validate(answerKeyFile, testFile);
 	std::cout << "TIME TAKEN: " << elapsed << '\n';
+	std::cout << "ROW EVALUATIONS: " << rowEvaluations << '\n';
+	std::cout << "COL EVALUATIONS: " << colEvaluations << '\n';
+
 
 	file.close();
 	answerKeyFile.close();

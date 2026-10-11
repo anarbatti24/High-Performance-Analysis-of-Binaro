@@ -60,6 +60,8 @@ void solveRows(GridV2& grid) {
 
 	for (int r = ROWS - 1; r >= 0; r--) {
 
+		rowEvaluations++;
+
 		uint16_t oldOnes = grid.rows[offset - r].ones;
 		uint16_t oldZeros = grid.rows[offset - r].zeros;
 
@@ -90,6 +92,8 @@ void solveRows(GridV2& grid) {
 		    newOnes &= newOnes - 1;
 
 		    grid.cols[offset - bitShift].ones |= 1 << r;
+		}
+
 		while (newZeros) {
 		    unsigned bitShift = std::countr_zero(newZeros);
 		    newZeros &= newZeros - 1;
@@ -109,6 +113,8 @@ void solveRows(GridV2& grid) {
 void solveCols(GridV2& grid) {
 
 	for (int c = COLS - 1; c >= 0; c--) {
+
+		colEvaluations++;
 
 		uint16_t oldOnes = grid.cols[offset - c].ones;
 		uint16_t oldZeros = grid.cols[offset - c].zeros;

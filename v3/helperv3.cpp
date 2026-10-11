@@ -57,11 +57,12 @@ void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle) {
  **/
 void solveRows(GridV2& grid) {
 	
-	while (!rowQueue.empty()) {
+	while (rowQueue > 0) {
 
-		auto r = rowQueue.front();
-		rowQueue.pop_front();
-		inRowQueue[r] = false;
+		rowEvaluations++;
+		auto r = __builtin_ctz(rowQueue);
+		rowQueue &= (rowQueue - 1);
+		
 		auto& currentRow = grid.rows[offset - r];
 
 		uint16_t oldOnes = currentRow.ones;
@@ -92,11 +93,7 @@ void solveRows(GridV2& grid) {
 			unsigned bitShift = std::countr_zero(newOnes);
 			newOnes &= newOnes - 1;
 			grid.cols[offset - bitShift].ones |= 1 << r;
-		
-			if (!inColQueue[offset - bitShift]) {
-			    colQueue.emplace_back(offset - bitShift);
-			    inColQueue[offset - bitShift] = true;
-			}
+			colQueue |= 1u << (offset - bitShift);
 		}
 
 		while (newZeros) {
@@ -104,11 +101,7 @@ void solveRows(GridV2& grid) {
 			unsigned bitShift = std::countr_zero(newZeros);
 			newZeros &= newZeros - 1;
 			grid.cols[offset - bitShift].zeros |= (1 << r);
-			
-			if (!inColQueue[offset - bitShift]) {
-			    colQueue.emplace_back(offset - bitShift);
-			    inColQueue[offset - bitShift] = true;
-			}
+			colQueue |= 1u << (offset - bitShift);
 		}
 	}
 }
@@ -120,12 +113,13 @@ void solveRows(GridV2& grid) {
  * @param grid The grid whose columns we are solving
  **/
 void solveCols(GridV2& grid) {
-	
-	while (!colQueue.empty()) {
 
-		auto c = colQueue.front();
-		colQueue.pop_front();
-		inColQueue[c] = false;
+	while (colQueue > 0) {
+
+		colEvaluations++;
+		auto c = __builtin_ctz(colQueue);
+		colQueue &= (colQueue - 1);
+
 		auto& currentCol = grid.cols[offset - c];
 
 		uint16_t oldOnes = currentCol.ones;
@@ -156,11 +150,7 @@ void solveCols(GridV2& grid) {
 			unsigned bitShift = std::countr_zero(newOnes);
 			newOnes &= newOnes - 1;
 			grid.rows[offset - bitShift].ones |= 1 << c;
-			
-			if (!inRowQueue[offset - bitShift]) {
-			    rowQueue.emplace_back(offset - bitShift);
-			    inRowQueue[offset - bitShift] = true;
-			}
+			rowQueue |= 1u << (offset - bitShift);
 		}
 
 		while (newZeros) {
@@ -168,11 +158,7 @@ void solveCols(GridV2& grid) {
 			unsigned bitShift = std::countr_zero(newZeros);
 			newZeros &= newZeros - 1;
 			grid.rows[offset - bitShift].zeros |= (1 << c);
-			
-			if (!inRowQueue[offset - bitShift]) {
-			    rowQueue.emplace_back(offset - bitShift);
-			    inRowQueue[offset - bitShift] = true;
-			}
+			rowQueue |= 1u << (offset - bitShift);
 		}
 	}
 }
