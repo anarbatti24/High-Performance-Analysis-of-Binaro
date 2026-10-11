@@ -12,6 +12,8 @@ void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle) {
 
 	int bit;
 
+	puzzle.reserve(100'000);
+
 	while (file >> bit) {
 		GridV2 grid = {};
 
@@ -64,14 +66,10 @@ void solveRows(GridV2& grid) {
 		// Case of doubles e.g. '11x'
 		grid.rows[offset - r].zeros |= ((grid.rows[offset - r].ones >> 1 & grid.rows[offset - r].ones >> 2) | (grid.rows[offset - r].ones << 1 & grid.rows[offset - r].ones << 2)) & 0x3FF;  
 		grid.rows[offset - r].ones |= ((grid.rows[offset - r].zeros >> 1 & grid.rows[offset - r].zeros >> 2) | (grid.rows[offset - r].zeros << 1 & grid.rows[offset - r].zeros << 2)) & 0x3FF;
-//		std::cout << "detecting doubles" << '\n';
 		
 		// Case of gaps e.g '1x1'
 		grid.rows[offset - r].zeros |= ((grid.rows[offset - r].ones << 1) & (~grid.rows[offset - r].ones) & (grid.rows[offset - r].ones >> 1)) & 0x3FF; 
 		grid.rows[offset - r].ones |= ((grid.rows[offset - r].zeros << 1) & (~grid.rows[offset - r].zeros) & (grid.rows[offset - r].zeros >> 1)) & 0x3FF;
-//		
-//		END OF CHANGES
-//		std::cout << "detecting gaps" << '\n';
 
 		// Filling in when we have 5 bits in a division
 		int onesCount = __builtin_popcount(grid.rows[offset - r].ones & 0x3FF);
@@ -84,57 +82,14 @@ void solveRows(GridV2& grid) {
 		grid.rows[offset - r].zeros |= fillZerosFromOnes;
 		grid.rows[offset - r].ones  |= fillOnesFromZeros;
 
-		//uint16_t onesCopy = zerosMaskConsecutive | zerosMaskGap | fillOnesFromZeros;
-		//uint16_t zerosCopy = onesMaskConsecutive | onesMaskGap | fillZerosFromOnes;
-		//uint16_t onesCopy = grid.rows[offset - r].ones & 0x3FF;
-		//uint16_t zerosCopy = grid.rows[offset - r].zeros & 0x3FF;
-		
 		uint16_t newOnes = grid.rows[offset - r].ones & ~oldOnes;
 		uint16_t newZeros = grid.rows[offset - r].zeros & ~oldZeros;
 		
-
-		// At this point, I've got a ones-division line and a zeros-division line. Now, I need to isolate each bit in each division and send it to its corresponding column.
-		
-		// Transmitting the changed row bits to their respective columns for the ones-division
-// 		while (newOnes != 0) {
-//
-//
-// //			std::cout << "sending ones columns" << '\n';
-// 			int bitShift = 31 - __builtin_clz(newOnes);
-// 			uint16_t isolatedMask = 1 << bitShift;
-//
-// 			//std::cout << "Ones rows: " << bitShift << '\n';
-// 			grid.cols[offset - bitShift].ones |= (1 << r);
-//
-// 			newOnes ^= isolatedMask;
-//
-// 		}
-
-
 		while (newOnes) {
 		    unsigned bitShift = std::countr_zero(newOnes);
 		    newOnes &= newOnes - 1;
 
-		    grid.cols[offset - bitShift].ones |= 1 << r);
-		}
-
-		// Transmitting the changed row bits to their respective columns for the zeros-division
-// 		while (newZeros != 0) {
-//
-// //			std::cout << "sending zeros columns" << '\n';
-// 			int bitShift = 31 - __builtin_clz(newZeros);
-// 			uint16_t isolatedMask = 1 << bitShift;
-//
-//
-//
-// 			//std::cout << "zeros rows: " << bitShift << '\n';
-// 			grid.cols[offset - bitShift].zeros |= (1 << r);
-//
-// 			newZeros ^= isolatedMask;
-//
-// 		}
-
-
+		    grid.cols[offset - bitShift].ones |= 1 << r;
 		while (newZeros) {
 		    unsigned bitShift = std::countr_zero(newZeros);
 		    newZeros &= newZeros - 1;
@@ -154,7 +109,6 @@ void solveRows(GridV2& grid) {
 void solveCols(GridV2& grid) {
 
 	for (int c = COLS - 1; c >= 0; c--) {
-	
 
 		uint16_t oldOnes = grid.cols[offset - c].ones;
 		uint16_t oldZeros = grid.cols[offset - c].zeros;
@@ -167,42 +121,19 @@ void solveCols(GridV2& grid) {
 		grid.cols[offset - c].zeros |= ((grid.cols[offset - c].ones << 1) & (~grid.cols[offset - c].ones) & (grid.cols[offset - c].ones >> 1)) & 0x3FF;
 		grid.cols[offset - c].ones |= ((grid.cols[offset - c].zeros << 1) & (~grid.cols[offset - c].zeros) & (grid.cols[offset - c].zeros >> 1)) & 0x3FF;
 
-
-
 		// Filling in when we have 5 bits in a division
 		int onesCount = __builtin_popcount(grid.cols[offset - c].ones & 0x3FF);
 		int zerosCount = __builtin_popcount(grid.cols[offset - c].zeros & 0x3FF);
 
-		// BRanchless for speed
+		// Branchless for speed
 		uint16_t fillZerosFromOnes = (~grid.cols[offset - c].ones & 0x3FF) * (onesCount == 5);
 		uint16_t fillOnesFromZeros = (~grid.cols[offset - c].zeros & 0x3FF) * (zerosCount == 5);
 
 		grid.cols[offset - c].zeros |= fillZerosFromOnes;
 		grid.cols[offset - c].ones  |= fillOnesFromZeros;
 
-
 		uint16_t newOnes = grid.cols[offset - c].ones & ~oldOnes;
 		uint16_t newZeros = grid.cols[offset - c].zeros & ~oldZeros;
-
-		//uint16_t onesCopy = grid.cols[offset - c].ones & 0x3FF;
-		//uint16_t zerosCopy = grid.cols[offset - c].zeros & 0x3FF;
-
-		// At this point, I've got a ones-division line and a zeros-division line. Now, I need to isolate each bit in each division and send it to its corresponding column.
-		
-		// Transmitting the changed row bits to their respective columns for the ones-division
-		// while (newOnes != 0) {
-		//
-		// 	int bitShift = 31 - __builtin_clz(newOnes);
-		// 	uint16_t isolatedMask = 1 << bitShift;
-		//
-		//
-		// 	//std::cout << "Ones cols: " << bitShift << '\n';
-		// 	grid.rows[offset - bitShift].ones |= (1 << c);
-		//
-		// 	newOnes ^= isolatedMask;
-		//
-		// }
-		//
 
 		while (newOnes) {
 		    unsigned bitShift = std::countr_zero(newOnes);
@@ -211,21 +142,6 @@ void solveCols(GridV2& grid) {
 		    grid.rows[offset - bitShift].ones |= (1 << c);
 		}
 
-
-		// Transmitting the changed row bits to their respective columns for the zeros-division
-		// while (newZeros != 0) {
-		//
-		// 	int bitShift = 31 - __builtin_clz(newZeros);
-		// 	uint16_t isolatedMask = 1 << bitShift;
-		//
-		//
-		// 	//std::cout << "Zeros cols: " << bitShift << '\n';
-		// 	grid.rows[offset - bitShift].zeros |= (1 << c);
-		//
-		// 	newZeros ^= isolatedMask;
-		//
-		// }
-		
 		while (newZeros) {
 		    unsigned bitShift = std::countr_zero(newZeros);
 		    newZeros &= newZeros - 1;
@@ -248,9 +164,7 @@ bool done(GridV2& grid) {
 		if ((grid.rows[r].ones | grid.rows[r].zeros) != 0b0000001111111111) { return (false); }
 	}
 
-
 	return (true);
-
 }
 
 
@@ -263,25 +177,17 @@ bool done(GridV2& grid) {
  **/
 void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle) {
 
-	//std::cout << "In write file" << '\n';
-
 	for (size_t i = 0; i < puzzle.size(); i++) {
 	
-
-		//std::cout << "In first loop" << '\n';
 		for (int r =  ROWS - 1; r >= 0; r--) {
 		
-			//std::cout << "In second loop" << '\n';
 			uint16_t row = puzzle[i].rows[offset - r].ones;
 
 			for (int c = COLS - 1; c >= 0; c--) {
 				
-
-				//std::cout << "In third loop" << '\n';
 				int bit = (row >> c) & 1;
 
 				file << bit << ' ';
-				//std::cout << "This is bit: " << bit << '\n';
 
 			}
 			file << '\n';

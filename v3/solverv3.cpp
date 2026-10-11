@@ -1,10 +1,15 @@
-#include "/home/anarbatti24/Programs/BinaroSolver/v2/helperv2.hpp"
+#include "/home/anarbatti24/Programs/BinaroSolver/v3/helperv3.hpp"
 #include <bitset>
 #include <sys/prctl.h>
 #include <linux/prctl.h>
 #include <fcntl.h>
 #include <unistd.h>
 
+
+std::deque<int> colQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+std::deque<int> rowQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+std::array<bool, 10> inRowQueue = {false};
+std::array<bool, 10> inColQueue = {false};
 
 int main() {
 
@@ -35,22 +40,37 @@ int main() {
 		write(perf_fd, "enable\n", 7);
 	}
 
-
 	// Solving loop
 	for (int i = 0; i < puzzles.size(); i++) {
+
+		rowQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+		colQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 		
+		inRowQueue = {true, true, true, true, true, true, true, true, true, true};
+		inColQueue = {true, true, true, true, true, true, true, true, true, true};
+
 		while (!done(puzzles[i])) {
-	
+
+			if (rowQueue.empty() && colQueue.empty()) {
+			
+				rowQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+				colQueue = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+			}
+
 			solveRows(puzzles[i]);
 			solveCols(puzzles[i]);
 		}
 	}
 
 
+
+
+
 	// Perf control
 	if (perf_fd != -1) {
-	    write(perf_fd, "disable\n", 8);
-	    close(perf_fd);
+		write(perf_fd, "disable\n", 8);
+		close(perf_fd);
 	}
 
 

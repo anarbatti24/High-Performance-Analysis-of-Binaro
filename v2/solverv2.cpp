@@ -23,8 +23,15 @@ int main() {
 	//std::cout << "HELLO" << '\n';
 
 	PuzzleSetV2 puzzles = {};
+	puzzles.reserve(100'000);
 
 	readFromFile(file, puzzles);
+
+	// for (auto& grid : puzzles) {
+	//
+	// 	std::cout << &grid << '\n';
+	//
+	// }
 
 	//std::cout << "Size of puzzles: " << puzzles.size() * sizeof(GridV2) << '\n';
 	//printPuzzleSetV2(puzzles);
@@ -34,8 +41,12 @@ int main() {
 	//	std::cout << "Read in " << puzzles.size() << " puzzles" << '\n';
 
 	//std::cout << puzzles.size() << '\n';
+	//
+	// std::cout << "First time" << '\n';
 
 	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
+
+	// std::cout << "SEcond time" << '\n';
 
 	auto start = std::chrono::steady_clock::now();
 	
