@@ -40,9 +40,9 @@ Additionally, because of how I created my data structures, each puzzle takes up 
 
 As discussed above, the total memory footprint of the simulation is 40MB. My L3 cache is able to store 24MiB of data, therefore, the bulk of my puzzles will need to live in RAM and will need to get fetched into L1/L2/L3. Using **perf** for profiling, I found that my *llc_miss_rate* (last-level cache miss rate) accounted for 70.5% of total *LLC-Loads*. This means that 70.5% of the time, when my CPU resorted to looking in the L3 cache for data, it couldn't find it and therefore had to make the trip to RAM, a very slow process (comparatively). **v2 addresses this.**
 
-Additionally, v1 solves each puzzle sequentially. It must solve puzzle 1 before going to puzzle 2 and so on. Given that each binaro grid can be solved independently of other grids, it makes sense to parallelize the operation of solving to reduce total solve time across 100'000 puzzles. **v3 addresses this.**
+Additionally, v1 solves each puzzle sequentially. It must solve puzzle 1 before going to puzzle 2 and so on. Given that each binaro grid can be solved independently of other grids, it makes sense to parallelize the operation of solving to reduce total solve time across 100'000 puzzles. **v4 addresses this.**
 
-Lastly, v1 steps through rows/columns sequentially. In other words, I would first need to input data into row 1 and then input data into row 5, even if the same rule could be applied to both. The downside being that each row/column is doing a lot of waiting and we're burning through a lot of clock cycles, ultimately resulting in a higher overall runtime. **v4 addresses this.**
+Lastly, v1 steps through rows/columns sequentially. In other words, I would first need to input data into row 1 and then input data into row 5, even if the same rule could be applied to both. The downside being that each row/column is doing a lot of waiting and we're burning through a lot of clock cycles, ultimately resulting in a higher overall runtime. **v5 addresses this.**
 
 
 **v2 (complete):**
@@ -96,25 +96,24 @@ first, I start by isolating the highest bit in the Line, so that I can send it, 
 
 Therefore, I need to send this to column 9 with a bitshift of 2.
 
-A mistake that I made when officially benchmarking was sending the entire line through every time, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, under standard conditions, dropped to **4 μs/puzzle** (was 8 μs/puzzle before, as reported on my resume).
+A mistake that I made when officially benchmarking was sending the entire line through every time, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, under standard conditions, dropped to **2.2 μs/puzzle** (was 8 μs/puzzle before, as reported on my resume).
+
+**v3 (complete)**
+
+Version 3 introduced a work-list algorithm to iterate over and solve only the rows and columns that have been changed. In version 2, I had a fixed loop iterating over every single row and every single column every single time the solveRows() and solveCols() functions were called, respectively. I figured that this would result in unnecessary iterations; why look through every single column when only column 1 changed? Version 3 fixes this by using a uint16_t (I'm starting to really like this data type 😅) which serves as an indicator for which rows and columns need processing. We simply loop over the uint16_t, extract the index of a set bit, operate on the corresponding row/column, toggle it off and continue until the uint16_t is 0. I thought that this would reduce the amount of work required per row/column iteration. I was unfortunately mistaken. I found that Version 3's solve time came in at **3 us/puzzle** and essentially every single metric was worse than v2.
+
+I'm still working on figuring out why, since, on paper, version 3 should be doing a lot less work in terms of the number of row/column iterations and processing steps. Perhaps the workload is too small for it to matter in this specific case.
 
 
-**v3 (planned):**
+**v4 (planned):**
 
 Version 3 will use multi-threading to parallelize puzzle completion. My CPU is the Intel i7-13700H, which has 6 performance cores and 8 efficiency cores. The P-cores have hyper-threading so there are 12 P-threads and the E-cores don't have hyper-threading so there are 8 E-threads. Given that spinning up a thread takes a few milliseconds (too slow), I was going to implement a thread pool and have idle threads pull and solve puzzles as required.
 
 Once I get to this point, I'll be very interested to see how the threads (P-thread vs. E-thread) perform and the optimal 'division.' Maybe using just the 12 P-threads is faster than using them with the 8 E-threads...
 
 
-**v4 (planned):** 
+**v5 (planned):** 
 
 Given the nature of Binaro, different rows can have values inputted independently, meaning that if, in Row 1 and Row 5, I have '00,' I know that I should complete them as Row 1,5 = '1001,' in the same clock cycle. Point being, that I can give a **S**ingle **I**nstruction and alter **M**ultiple **D**ata **(SIMD)**. To implement this, I can use the AVX instruction set via the <immintrin.h> library. The YMM register, which is where AVX instructions are carried out, is able to hold 256 bits of information. Used in tandem with the optimization detailed in v2, I would be able to fit the bulk of the 32bit row/column integers within a single YMM register, meaning that SIMD would seem (on paper) to have a drastic impact on runtime.
-
-
-**v5 (planned):**
-
-The prior versions explored how each individual optimization benchmarks against v1. Therefore, in v5, I'll integrate all optimizations/techniques together to see the overall impact on factors such as: run-time, cycles, instructions, branch-misses and load-misses.
-
-I expect to see vastly lower (if any) cache miss rates, fewer cycles required to get through the simulation (leading to a higher IpC) and perhaps a lower number of branches and branch misses (if I implement using bitwise operators).
 
 
