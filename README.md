@@ -23,7 +23,6 @@ Graphical Results are below as follows (Updated as new versions are benchmarked)
 <p align="center">
   <img src="/images/v1_vs_v2_vs_v3.png" width="900">
 </p>
-Please note, I made a mistake while making the graphic, the "Solve Time" graphic should have units of (microseconds/puzzle) rather than just seconds.
 
 **Project Information and Direction**
 -----------------------------------------------------------
