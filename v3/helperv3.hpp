@@ -8,16 +8,19 @@
 #include <deque>
 #include <algorithm>
 
-// extern std::deque<int> colQueue;
-// extern std::deque<int> rowQueue;
 constexpr int offset = 9;
 constexpr uint16_t lineMask = 0x3FF;
-//extern std::array<bool, 10> inRowQueue;
-//extern std::array<bool, 10> inColQueue;
-extern uint16_t rowQueue;
-extern uint16_t colQueue;
+
 extern long rowEvaluations;
 extern long colEvaluations;
+extern long reseedEvaluations;
+
+#ifdef COUNT_EVALS
+	#define COUNT(c) (++(c))
+#else
+	#define COUNT(c) ((void)0)
+#endif
+
 
 /**
  * @brief Function to read from the file
@@ -29,30 +32,18 @@ void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle);
 
 
 /**
- * @brief Function to solve the rows of a grid
- *
- * @param grid 		The grid whose rows we are solving
- * @param row 		The specific row of the grid we're solving 
- * @param colQueue 	The deque containing the columns that were affected by the row alterations
- **/
-void solveRows(GridV2& grid);
-
-
-/**
- * @brief Function to solve the columns of a grid
- *
- * @param grid 		The grod whose columns we're solving
- * @param col 		The specific column of the grid we're solving
- * @param rowQueue 	The deque containing the rows that were affected by the columns alterations
- **/
-void solveCols(GridV2& grid);
-
-
-/**
  * @brief Function to see whether we're done with the grid
  *
  **/
 bool done(GridV2& grid);
+
+
+/**
+ * Function to solve grids (combines solving rows and columns into 1 call so we can make the rowQueue and colQueue explicitly local)
+ *
+ * @param grid	The grid we're solving
+ **/
+void solveGrid(GridV2& grid);
 
 
 /**
@@ -62,7 +53,6 @@ bool done(GridV2& grid);
  * @param puzzle 	The puzzleSet we're writing from
  **/
 void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle);
-
 
 
 /**

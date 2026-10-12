@@ -48,123 +48,6 @@ void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle) {
 }
 
 
-
-
-/**
- * @brief Function to solve the rows of a grid
- *
- * @param grid The grid whose rows we are solving
- **/
-void solveRows(GridV2& grid) {
-	
-	while (rowQueue > 0) {
-
-		rowEvaluations++;
-		auto r = __builtin_ctz(rowQueue);
-		rowQueue &= (rowQueue - 1);
-		
-		auto& currentRow = grid.rows[r];
-
-		uint16_t oldOnes = currentRow.ones;
-		uint16_t oldZeros = currentRow.zeros;
-
-		// Case of doubles e.g. '11x'
-		currentRow.zeros |= ((currentRow.ones  >> 1 & currentRow.ones  >> 2) | (currentRow.ones  << 1 & currentRow.ones  << 2)) & lineMask;  
-		currentRow.ones  |= ((currentRow.zeros >> 1 & currentRow.zeros >> 2) | (currentRow.zeros << 1 & currentRow.zeros << 2)) & lineMask;
-
-		// Case of gaps e.g '1x1'
-		currentRow.zeros |= ((currentRow.ones  << 1) & (~currentRow.ones)  & (currentRow.ones  >> 1)) & lineMask; 
-		currentRow.ones  |= ((currentRow.zeros << 1) & (~currentRow.zeros) & (currentRow.zeros >> 1)) & lineMask;
-
-		// detecting when we have 5 of a bit in a division
-		int onesCount  = __builtin_popcount(currentRow.ones   & lineMask);
-		int zerosCount = __builtin_popcount(currentRow.zeros  & lineMask);
-
-		// Fills in the other bits when we have 5 of a bit
-		currentRow.zeros |= (~currentRow.ones  & lineMask)  * (onesCount == 5);
-		currentRow.ones  |= (~currentRow.zeros & lineMask)  * (zerosCount == 5);
-
-		uint16_t newOnes  = currentRow.ones   ^ oldOnes;
-		uint16_t newZeros = currentRow.zeros  ^ oldZeros;
-
-		colQueue |= newOnes | newZeros;
-
-		// Transmitting altered rowBits to their respective columns as well		
-		while (newOnes) {
-
-			unsigned bitShift = std::countr_zero(newOnes);
-			newOnes &= newOnes - 1;
-			grid.cols[bitShift].ones |= 1 << r;
-		}
-
-		while (newZeros) {
-	
-			unsigned bitShift = std::countr_zero(newZeros);
-			newZeros &= newZeros - 1;
-			grid.cols[bitShift].zeros |= (1 << r);
-		}
-	}
-}
-
-
-/**
- * @brief Function to solve the columns of a grid
- *
- * @param grid The grid whose columns we are solving
- **/
-void solveCols(GridV2& grid) {
-
-	while (colQueue > 0) {
-
-		colEvaluations++;
-		auto c = __builtin_ctz(colQueue);
-		colQueue &= (colQueue - 1);
-
-		auto& currentCol = grid.cols[c];
-
-		uint16_t oldOnes = currentCol.ones;
-		uint16_t oldZeros = currentCol.zeros;
-
-		// Case of doubles e.g. '11x'
-		currentCol.zeros |= ((currentCol.ones  >> 1 & currentCol.ones  >> 2) | (currentCol.ones  << 1 & currentCol.ones  << 2)) & lineMask;  
-		currentCol.ones  |= ((currentCol.zeros >> 1 & currentCol.zeros >> 2) | (currentCol.zeros << 1 & currentCol.zeros << 2)) & lineMask;
-
-		// Case of gaps e.g '1x1'
-		currentCol.zeros |= ((currentCol.ones  << 1) & (~currentCol.ones)  & (currentCol.ones  >> 1)) & lineMask; 
-		currentCol.ones  |= ((currentCol.zeros << 1) & (~currentCol.zeros) & (currentCol.zeros >> 1)) & lineMask;
-
-		// detecting when we have 5 of a bit in a division
-		int onesCount  = __builtin_popcount(currentCol.ones   & lineMask);
-		int zerosCount = __builtin_popcount(currentCol.zeros  & lineMask);
-
-		// Fills in the other bits when we have 5 of a bit
-		currentCol.zeros |= (~currentCol.ones  & lineMask)  * (onesCount == 5);
-		currentCol.ones  |= (~currentCol.zeros & lineMask)  * (zerosCount == 5);
-
-		uint16_t newOnes  = currentCol.ones   ^ oldOnes;
-		uint16_t newZeros = currentCol.zeros  ^ oldZeros;
-
-		rowQueue |= newOnes | newZeros;
-
-		// Transmitting altered rowBits to their respective rows as well		
-		while (newOnes) {
-
-			unsigned bitShift = std::countr_zero(newOnes);
-			newOnes &= newOnes - 1;
-			grid.rows[bitShift].ones |= 1 << c;
-		}
-
-		while (newZeros) {
-	
-			unsigned bitShift = std::countr_zero(newZeros);
-			newZeros &= newZeros - 1;
-			grid.rows[bitShift].zeros |= (1 << c);
-		}
-	}
-}
-
-
-
 /**
  * @brief Function to see whether we're done with the grid
  *
@@ -177,6 +60,146 @@ bool done(GridV2& grid) {
 	}
 	return (true);
 
+}
+
+
+
+/**
+ * Function to solve grids (combines solving rows and columns into 1 call so we can make the rowQueue and colQueue explicitly local)
+ *
+ * @param grid	The grid we're solving
+ **/
+void solveGrid(GridV2& grid) {
+
+	// rowQueue and colQueue are local so we can store them in registers
+	uint16_t rowQueue = lineMask;
+	uint16_t colQueue = lineMask;
+	uint16_t rowsDone = 0;
+	uint16_t colsDone = 0;
+
+	// Runs while the grid isn't solved
+	while (rowsDone != lineMask) {
+
+		// Re-seeds
+		if (!(rowQueue | colQueue)) {
+			COUNT(reseedEvaluations);
+			rowQueue = ~rowsDone & lineMask;
+			colQueue = ~colsDone & lineMask;
+		}
+
+		while (rowQueue) {
+			
+			COUNT(rowEvaluations);
+			unsigned r = std::countr_zero(rowQueue);
+			rowQueue &= rowQueue - 1;
+			Line& currentRow = grid.rows[r];
+
+			uint16_t ones  = currentRow.ones;
+			uint16_t zeros = currentRow.zeros;
+
+			uint16_t oldOnes  = ones;
+			uint16_t oldZeros = zeros;
+
+			// Case of doubles e.g. '11x'
+			zeros |= ((ones  >> 1 & ones  >> 2) | (ones  << 1 & ones  << 2)) & lineMask;  
+			ones  |= ((zeros >> 1 & zeros >> 2) | (zeros << 1 & zeros << 2)) & lineMask;
+
+			// Case of gaps e.g '1x1'
+			zeros |= ((ones  << 1) & (~ones)  & (ones  >> 1)); 
+			ones  |= ((zeros << 1) & (~zeros) & (zeros >> 1));
+
+			// detecting when we have 5 of a bit in a division
+			int onesCount  = __builtin_popcount(ones   & lineMask);
+			int zerosCount = __builtin_popcount(zeros  & lineMask);
+
+			// Fills in the other bits when we have 5 of a bit
+			zeros |= (~ones  & lineMask)  * (onesCount == 5);
+			ones  |= (~zeros & lineMask)  * (zerosCount == 5);
+			
+			currentRow.ones = ones;
+			currentRow.zeros = zeros;
+
+			uint16_t newOnes  = ones   ^ oldOnes;
+			uint16_t newZeros = zeros  ^ oldZeros;
+
+			uint16_t changed = newOnes | newZeros;
+
+			rowsDone |= (uint16_t)((ones | zeros) == lineMask) << r;
+			colQueue |= changed & ~colsDone;
+
+			// Transmitting altered rowBits to their respective columns as well		
+			while (newOnes) {
+
+				unsigned bitShift = std::countr_zero(newOnes);
+				newOnes &= newOnes - 1;
+				grid.cols[bitShift].ones |= 1 << r;
+			}
+
+			while (newZeros) {
+
+				unsigned bitShift = std::countr_zero(newZeros);
+				newZeros &= newZeros - 1;
+				grid.cols[bitShift].zeros |= (1 << r);
+			}
+
+		}
+
+		while (colQueue) {
+
+			COUNT(colEvaluations);
+			unsigned c = std::countr_zero(colQueue);
+			colQueue &= colQueue - 1;
+			Line& currentCol = grid.cols[c];
+
+
+			uint16_t ones  = currentCol.ones;
+			uint16_t zeros = currentCol.zeros;
+			
+			uint16_t oldOnes  = ones;
+			uint16_t oldZeros = zeros;
+
+			// Case of doubles e.g. '11x'
+			zeros |= ((ones  >> 1 & ones  >> 2) | (ones  << 1 & ones  << 2)) & lineMask;  
+			ones  |= ((zeros >> 1 & zeros >> 2) | (zeros << 1 & zeros << 2)) & lineMask;
+
+			// Case of gaps e.g '1x1'
+			zeros |= ((ones  << 1) & (~ones)  & (ones  >> 1));
+			ones  |= ((zeros << 1) & (~zeros) & (zeros >> 1));
+
+			// detecting when we have 5 of a bit in a division
+			int onesCount  = __builtin_popcount(ones   & lineMask);
+			int zerosCount = __builtin_popcount(zeros  & lineMask);
+
+			// Fills in the other bits when we have 5 of a bit
+			zeros |= (~ones  & lineMask)  * (onesCount == 5);
+			ones  |= (~zeros & lineMask)  * (zerosCount == 5);
+
+			currentCol.ones = ones;
+			currentCol.zeros = zeros;
+
+			uint16_t newOnes  = ones   ^ oldOnes;
+			uint16_t newZeros = zeros  ^ oldZeros;
+
+			uint16_t changed = newOnes | newZeros;
+
+			colsDone |= (uint16_t)((ones | zeros) == lineMask) << c;
+			rowQueue |= changed & ~rowsDone;
+
+			while (newOnes) {
+
+				unsigned bitShift = std::countr_zero(newOnes);
+				newOnes &= newOnes - 1;
+				grid.rows[bitShift].ones |= 1 << c;
+			}
+
+			while (newZeros) {
+
+				unsigned bitShift = std::countr_zero(newZeros);
+				newZeros &= newZeros - 1;
+				grid.rows[bitShift].zeros |= (1 << c);
+			}
+		}
+	}
 }
 
 
@@ -221,7 +244,7 @@ void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle) {
  **/
 void printPuzzleSetV2(const PuzzleSetV2& puzzleSet) {
 
-	for (int i = 0; i < puzzleSet.size(); i++) {
+	for (size_t i = 0; i < puzzleSet.size(); i++) {
 
 		for (int r = ROWS - 1; r >= 0; r--) {
 

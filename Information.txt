@@ -12,131 +12,128 @@
  VERSION 1
  ======================================================================================================================
  
- Performance counter stats for './solverv1' (20 runs):
+ Performance counter stats for './v1/solverv1' (20 runs):
 
-     6,146,550,112      cpu_core/cycles/                                                        ( +-  0.05% )
-     5,393,055,484      cpu_core/instructions/                                                  ( +-  0.01% )
-           838,031      cpu_core/cache-references/                                              ( +-  0.90% )
-           337,589      cpu_core/cache-misses/                                                  ( +-  0.17% )
-       849,008,549      cpu_core/L1-dcache-loads/                                               ( +-  0.01% )
-           334,571      cpu_core/L1-dcache-load-misses/                                         ( +-  2.39% )
-            38,622      cpu_core/LLC-loads/                                                     ( +-  2.99% )
-             5,811      cpu_core/LLC-load-misses/                                               ( +-  0.63% )
-     1,711,767,221      cpu_core/branch-instructions/                                           ( +-  0.01% )
-       196,140,143      cpu_core/branch-misses/                                                 ( +-  0.03% )
+     6,167,990,712      cpu_core/cycles/                                                        ( +-  0.03% )
+     5,403,369,712      cpu_core/instructions/                                                  ( +-  0.00% )
+           864,836      cpu_core/cache-references/                                              ( +-  0.57% )
+           339,692      cpu_core/cache-misses/                                                  ( +-  0.17% )
+       851,397,802      cpu_core/L1-dcache-loads/                                               ( +-  0.00% )
+           503,648      cpu_core/L1-dcache-load-misses/                                         ( +-  1.35% )
+            46,661      cpu_core/LLC-loads/                                                     ( +-  2.00% )
+             5,896      cpu_core/LLC-load-misses/                                               ( +-  1.01% )
+     1,713,656,287      cpu_core/branch-instructions/                                           ( +-  0.00% )
+       196,295,049      cpu_core/branch-misses/                                                 ( +-  0.03% )
 
-       2.217366674 +- 0.000962382 seconds time elapsed  ( +-  0.04% )
+       4.014167350 +- 0.001341534 seconds time elapsed  ( +-  0.03% )
 
 	Time Taken (us):
-	1625530
-	1621628
-	1619716
-	1620868
-	1625024
-	1624903
-	1624550
-	1620967
-	1625189
-	1625487
-	1620180
-	1621884
-	1619691
-	1623175
-	1625677
-	1625987
-	1623953
-	1617496
-	1615419
-	1615021
+	2948280
+	2936590
+	2939734
+	2947226
+	2944280
+	2942674
+	2946800
+	2944899
+	2950088
+	2946212
+	2950963
+	2942284
+	2948499
+	2946610
+	2941102
+	2951014
+	2944471
+	2949908
+	2943563
+	2943964
 
-	Average/puzzle (us) ≈ 16;
+	Average/puzzle (us) ≈ 29;
 
  ======================================================================================================================
  ======================================================================================================================
  VERSION 2
  ======================================================================================================================
  
- Performance counter stats for './solverv2' (20 runs):
+ Performance counter stats for './v2/solverv2' (20 runs):
 
-       822,806,373      cpu_core/cycles/                                                        ( +-  0.07% )
-     2,243,704,855      cpu_core/instructions/                                                  ( +-  0.07% )
-           149,426      cpu_core/cache-references/                                              ( +-  0.77% )
-            53,371      cpu_core/cache-misses/                                                  ( +-  1.32% )
-       206,265,653      cpu_core/L1-dcache-loads/                                               ( +-  0.16% )
-            71,846      cpu_core/L1-dcache-load-misses/                                         ( +-  0.95% )
-             3,966      cpu_core/LLC-loads/                                                     ( +-  3.78% )
-               630      cpu_core/LLC-load-misses/                                               ( +-  5.77% )
-       170,408,094      cpu_core/branch-instructions/                                           ( +-  0.13% )
-         9,636,589      cpu_core/branch-misses/                                                 ( +-  0.05% )
+       737,856,560      cpu_core/cycles/                                                        ( +-  0.05% )
+     2,119,005,081      cpu_core/instructions/                                                  ( +-  0.03% )
+           159,670      cpu_core/cache-references/                                              ( +-  1.20% )
+            43,045      cpu_core/cache-misses/                                                  ( +-  0.81% )
+       159,946,186      cpu_core/L1-dcache-loads/                                               ( +-  0.07% )
+           114,741      cpu_core/L1-dcache-load-misses/                                         ( +-  0.96% )
+             7,024      cpu_core/LLC-loads/                                                     ( +-  5.16% )
+             1,151      cpu_core/LLC-load-misses/                                               ( +-  1.97% )
+       170,347,427      cpu_core/branch-instructions/                                           ( +-  0.05% )
+         9,613,323      cpu_core/branch-misses/                                                 ( +-  0.02% )
 
-       0.796034797 +- 0.000841437 seconds time elapsed  ( +-  0.11% )
+       1.398025104 +- 0.000644328 seconds time elapsed  ( +-  0.05% )
 
 	Time Taken (us):
-	218474
-	217557
-	217533
-	217325
-	217633
-	217502
-	217609
-	217353
-	217426
-	217331
-	217316
-	218290
-	217566
-	217376
-	218076
-	217503
-	217330
-	217525
-	217168
-	217491
+	352395
+	352352
+	352488
+	352087
+	352256
+	354061
+	353265
+	352226
+	352226
+	352516
+	352385
+	353938
+	352782
+	354133
+	352701
+	354317
+	352994
+	352727
+	354108
+	352624
 
-	Average/puzzle (us) ≈ 2.2;
+	Average/puzzle (us) ≈ 3.5;
 
  ======================================================================================================================
  ======================================================================================================================
  VERSION 3
  ======================================================================================================================
  
- Performance counter stats for './solverv3' (20 runs):
+       552,875,050      cpu_core/cycles/                                                        ( +-  0.08% )
+     1,122,728,389      cpu_core/instructions/                                                  ( +-  0.06% )
+           154,891      cpu_core/cache-references/                                              ( +-  1.11% )
+            52,519      cpu_core/cache-misses/                                                  ( +-  1.17% )
+       114,640,818      cpu_core/L1-dcache-loads/                                               ( +-  0.09% )
+            74,982      cpu_core/L1-dcache-load-misses/                                         ( +-  0.64% )
+             5,297      cpu_core/LLC-loads/                                                     ( +-  5.76% )
+               523      cpu_core/LLC-load-misses/                                               ( +-  5.31% )
+        78,404,035      cpu_core/branch-instructions/                                           ( +-  0.09% )
+         9,362,137      cpu_core/branch-misses/                                                 ( +-  0.06% )
 
-     1,134,567,603      cpu_core/cycles/                                                        ( +-  0.04% )
-     2,786,001,953      cpu_core/instructions/                                                  ( +-  0.04% )
-           156,236      cpu_core/cache-references/                                              ( +-  0.63% )
-            37,125      cpu_core/cache-misses/                                                  ( +-  1.33% )
-       281,711,140      cpu_core/L1-dcache-loads/                                               ( +-  0.08% )
-           156,526      cpu_core/L1-dcache-load-misses/                                         ( +-  0.65% )
-             6,599      cpu_core/LLC-loads/                                                     ( +-  2.45% )
-             1,856      cpu_core/LLC-load-misses/                                               ( +-  2.11% )
-       198,718,649      cpu_core/branch-instructions/                                           ( +-  0.07% )
-        10,976,307      cpu_core/branch-misses/                                                 ( +-  0.05% )
-
-       0.879572673 +- 0.001125467 seconds time elapsed  ( +-  0.13% )
+       1.314507314 +- 0.000752661 seconds time elapsed  ( +-  0.06% )
 
 	Time Taken (us):
-	299816
-	299550
-	299326
-	300127
-	299558
-	299713
-	299473
-	299667
-	299514
-	299811
-	299804
-	299939
-	299636
-	299713
-	300559
-	299450
-	299625
-	299949
-	300552
-	299517
+	264236
+	265980
+	264532
+	266065
+	265370
+	264712
+	264685
+	264730
+	264705
+	264612
+	264831
+	264813
+	263945
+	265048
+	264379
+	264279
+	264549
+	264217
+	264524
 
-	Average/puzzle (us) ≈ 3;
+	Average/puzzle (us) ≈ 2.6;
 
  ======================================================================================================================

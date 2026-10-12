@@ -32,7 +32,7 @@ The project itself has been split into 5 versions (planned):
 
 **v1 (complete):**
 
-Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmark for the project. Information regarding the performance of v1 can be found in *Information.txt*, located in the root folder. As a brief summary, however, v1 took around 1.6 seconds to solve 100,000 puzzles, with an **average solve time of 16μs/puzzle** (A little faster than my 57 seconds, to say the least). It had 196,140,143 branch misses in 1,711,767,221 branches and had 5,393,055,484 instructions in 6,146,550,112 cycles, for an instructions per cycle (IPC) ratio of around 1.14.
+Version 1 is a naive/brute-force solver, whose main aim is to provide a benchmark for the project. Information regarding the performance of v1 can be found in *Information.txt*, located in the root folder. it had an **average solve time of 29μs/puzzle** (A little faster than my 57 seconds, to say the least). 
 
 Additionally, because of how I created my data structures, each puzzle takes up 400 bytes of memory, with the total simulation taking up 40MB 
 (400 bytes/puzzle * 100,000 puzzles).
@@ -95,13 +95,13 @@ first, I start by isolating the highest bit in the Line, so that I can send it, 
 
 Therefore, I need to send this to column 9 with a bitshift of 2.
 
-A mistake that I made when officially benchmarking was sending the entire line through every time, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, under standard conditions, dropped to **2.2 μs/puzzle** (was 8 μs/puzzle before, as reported on my resume).
+A mistake that I made when officially benchmarking was sending the entire line through every time, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, under standard conditions, dropped to **3.5 μs/puzzle** (was 8 μs/puzzle before, as reported on my resume).
 
 **v3 (complete)**
 
-Version 3 introduced a work-list algorithm to iterate over and solve only the rows and columns that have been changed. In version 2, I had a fixed loop iterating over every single row and every single column every single time the solveRows() and solveCols() functions were called, respectively. I figured that this would result in unnecessary iterations; why look through every single column when only column 1 changed? Version 3 fixes this by using a uint16_t (I'm starting to really like this data type 😅) which serves as an indicator for which rows and columns need processing. We simply loop over the uint16_t, extract the index of a set bit, operate on the corresponding row/column, toggle it off and continue until the uint16_t is 0. I thought that this would reduce the amount of work required per row/column iteration. I was unfortunately mistaken. I found that Version 3's solve time came in at **3 us/puzzle** and essentially every single metric was worse than v2.
+Version 3 introduced a work-list algorithm to iterate over and solve only the rows and columns that have been changed. In version 2, I had a fixed loop iterating over every single row and every single column every single time the solveRows() and solveCols() functions were called, respectively. I figured that this would result in unnecessary iterations; why look through every single column when only column 1 changed? Version 3 fixes this by using a uint16_t (I'm starting to really like this data type 😅) which serves as an indicator for which rows and columns need processing. We simply loop over the uint16_t, extract the index of a set bit, operate on the corresponding row/column, toggle it off and continue until the uint16_t is 0. I thought that this would reduce the amount of work required per row/column iteration. Under standard conditions, I found that Version 3's solve time came in at **2.6 us/puzzle**.
 
-I'm still working on figuring out why, since, on paper, version 3 should be doing a lot less work in terms of the number of row/column iterations and processing steps. Perhaps the workload is too small for it to matter in this specific case.
+Need to include the actual approach and implementation.
 
 
 **v4 (planned):**

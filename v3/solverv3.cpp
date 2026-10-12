@@ -5,15 +5,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-uint16_t rowQueue;
-uint16_t colQueue;
-long rowEvaluations = 0;
-long colEvaluations = 0;
+// uint16_t rowQueue;
+// uint16_t colQueue;
+long rowEvaluations 	= 0;
+long colEvaluations 	= 0;
+long reseedEvaluations	= 0;
 
 int main() {
 
 	//CHANGED FILE
-	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/v3/test.txt");
+	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/binaro.txt");
 	std::ofstream outputFile("/home/anarbatti24/Programs/BinaroSolver/v3/solutionsv3.txt");
 	std::ifstream answerKeyFile("/home/anarbatti24/Programs/BinaroSolver/solutions.txt");
 
@@ -27,7 +28,7 @@ int main() {
 
 	readFromFile(file, puzzles);
 
-	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
+	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY | O_NONBLOCK);
 
 	auto start = std::chrono::steady_clock::now();
 
@@ -37,22 +38,9 @@ int main() {
 	}
 
 	// Solving loop
-	for (int i = 0; i < puzzles.size(); i++) {
-
-		rowQueue = lineMask;
-		colQueue = lineMask;
-
-		while (!done(puzzles[i])) {
-
-			uint16_t eitherIsZero = !(rowQueue | colQueue);
-			uint16_t mask = lineMask & (-eitherIsZero);
-
-			rowQueue |= mask;
-			colQueue |= mask;
-
-			solveRows(puzzles[i]);
-			solveCols(puzzles[i]);
-		}
+	for (size_t i = 0; i < puzzles.size(); i++) {
+	
+		solveGrid(puzzles[i]);
 	}
 
 	// Perf control
@@ -75,7 +63,8 @@ int main() {
 	std::cout << "TIME TAKEN: " << elapsed << '\n';
 	std::cout << "ROW EVALUATIONS: " << rowEvaluations << '\n';
 	std::cout << "COL EVALUATIONS: " << colEvaluations << '\n';
-	
+	std::cout << "RESEED EVALUATIONS: " << reseedEvaluations << '\n';
+
 	file.close();
 	answerKeyFile.close();
 }

@@ -24,7 +24,7 @@ int main() {
 	file.close();
 
 
-	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
+	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY | O_NONBLOCK);
 
 	auto start = std::chrono::steady_clock::now();
 	

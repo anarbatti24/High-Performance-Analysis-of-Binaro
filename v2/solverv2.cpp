@@ -11,7 +11,7 @@ long colEvaluations = 0;
 int main() {
 
 	//CHANGED FILE
-	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/v2/test.txt");
+	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/binaro.txt");
 	std::ofstream outputFile("/home/anarbatti24/Programs/BinaroSolver/v2/solutionsv2.txt");
 	std::ifstream answerKeyFile("/home/anarbatti24/Programs/BinaroSolver/solutions.txt");
 
@@ -29,24 +29,7 @@ int main() {
 
 	readFromFile(file, puzzles);
 
-	// for (auto& grid : puzzles) {
-	//
-	// 	std::cout << &grid << '\n';
-	//
-	// }
-
-	//std::cout << "Size of puzzles: " << puzzles.size() * sizeof(GridV2) << '\n';
-	//printPuzzleSetV2(puzzles);
-
-	//puzzles.push_back(grid);
-
-	//	std::cout << "Read in " << puzzles.size() << " puzzles" << '\n';
-
-	//std::cout << puzzles.size() << '\n';
-	//
-	// std::cout << "First time" << '\n';
-
-	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
+	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY | O_NONBLOCK);
 
 	// std::cout << "SEcond time" << '\n';
 
@@ -60,7 +43,7 @@ int main() {
 
 	// for (long j = 0; j < 10000; j++) {
 
-		for (int i = 0; i < puzzles.size(); i++) {
+		for (size_t i = 0; i < puzzles.size(); i++) {
 			
 			while (!done(puzzles[i])) {
 		
