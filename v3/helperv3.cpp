@@ -29,16 +29,16 @@ void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle) {
 
 				if (bit == 0) {
 
-					grid.rows[offset - r].zeros |= rowMask;
-					grid.cols[offset - c].zeros |= colMask;
+					grid.rows[r].zeros |= rowMask;
+					grid.cols[c].zeros |= colMask;
 					//std::cout << "First one" << '\n';
 
 				}
 
 				else if (bit == 1) {
 
-					grid.rows[offset - r].ones |= rowMask;
-					grid.cols[offset - c].ones |= colMask;	
+					grid.rows[r].ones |= rowMask;
+					grid.cols[c].ones |= colMask;	
 					//std::cout << "Second one" << '\n';
 				}
 			}
@@ -63,7 +63,7 @@ void solveRows(GridV2& grid) {
 		auto r = __builtin_ctz(rowQueue);
 		rowQueue &= (rowQueue - 1);
 		
-		auto& currentRow = grid.rows[offset - r];
+		auto& currentRow = grid.rows[r];
 
 		uint16_t oldOnes = currentRow.ones;
 		uint16_t oldZeros = currentRow.zeros;
@@ -87,21 +87,21 @@ void solveRows(GridV2& grid) {
 		uint16_t newOnes  = currentRow.ones   ^ oldOnes;
 		uint16_t newZeros = currentRow.zeros  ^ oldZeros;
 
+		colQueue |= newOnes | newZeros;
+
 		// Transmitting altered rowBits to their respective columns as well		
 		while (newOnes) {
 
 			unsigned bitShift = std::countr_zero(newOnes);
 			newOnes &= newOnes - 1;
-			grid.cols[offset - bitShift].ones |= 1 << r;
-			colQueue |= 1u << (offset - bitShift);
+			grid.cols[bitShift].ones |= 1 << r;
 		}
 
 		while (newZeros) {
 	
 			unsigned bitShift = std::countr_zero(newZeros);
 			newZeros &= newZeros - 1;
-			grid.cols[offset - bitShift].zeros |= (1 << r);
-			colQueue |= 1u << (offset - bitShift);
+			grid.cols[bitShift].zeros |= (1 << r);
 		}
 	}
 }
@@ -120,7 +120,7 @@ void solveCols(GridV2& grid) {
 		auto c = __builtin_ctz(colQueue);
 		colQueue &= (colQueue - 1);
 
-		auto& currentCol = grid.cols[offset - c];
+		auto& currentCol = grid.cols[c];
 
 		uint16_t oldOnes = currentCol.ones;
 		uint16_t oldZeros = currentCol.zeros;
@@ -144,21 +144,21 @@ void solveCols(GridV2& grid) {
 		uint16_t newOnes  = currentCol.ones   ^ oldOnes;
 		uint16_t newZeros = currentCol.zeros  ^ oldZeros;
 
+		rowQueue |= newOnes | newZeros;
+
 		// Transmitting altered rowBits to their respective rows as well		
 		while (newOnes) {
 
 			unsigned bitShift = std::countr_zero(newOnes);
 			newOnes &= newOnes - 1;
-			grid.rows[offset - bitShift].ones |= 1 << c;
-			rowQueue |= 1u << (offset - bitShift);
+			grid.rows[bitShift].ones |= 1 << c;
 		}
 
 		while (newZeros) {
 	
 			unsigned bitShift = std::countr_zero(newZeros);
 			newZeros &= newZeros - 1;
-			grid.rows[offset - bitShift].zeros |= (1 << c);
-			rowQueue |= 1u << (offset - bitShift);
+			grid.rows[bitShift].zeros |= (1 << c);
 		}
 	}
 }
@@ -195,7 +195,7 @@ void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle) {
 		for (int r =  ROWS - 1; r >= 0; r--) {
 
 			//std::cout << "In second loop" << '\n';
-			uint16_t row = puzzle[i].rows[offset - r].ones;
+			uint16_t row = puzzle[i].rows[r].ones;
 
 			for (int c = COLS - 1; c >= 0; c--) {
 
@@ -225,8 +225,8 @@ void printPuzzleSetV2(const PuzzleSetV2& puzzleSet) {
 
 		for (int r = ROWS - 1; r >= 0; r--) {
 
-			uint16_t onesRow  = puzzleSet[i].rows[offset - r].ones;
-			uint16_t zerosRow = puzzleSet[i].rows[offset - r].zeros;
+			uint16_t onesRow  = puzzleSet[i].rows[r].ones;
+			uint16_t zerosRow = puzzleSet[i].rows[r].zeros;
 
 			for (int c = COLS - 1; c >= 0; c--) {
 
