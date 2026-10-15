@@ -28,25 +28,31 @@ int main() {
 
 	readFromFile(file, puzzles);
 
-	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY | O_NONBLOCK);
+	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
 
 	auto start = std::chrono::steady_clock::now();
 
 	// Perf control
 	if (perf_fd != -1) {
 		write(perf_fd, "enable\n", 7);
+
 	}
 
 	// Solving loop
-	for (size_t i = 0; i < puzzles.size(); i++) {
+	// for (int i = 0; i < 10; i++) {
 	
-		solveGrid(puzzles[i]);
-	}
+		for (size_t i = 0; i < puzzles.size(); i++) {
+		
+			solveGrid(puzzles[i]);
+		}
+
+	// }
 
 	// Perf control
 	if (perf_fd != -1) {
 		write(perf_fd, "disable\n", 8);
 		close(perf_fd);
+
 	}
 
 	auto stop = std::chrono::steady_clock::now();

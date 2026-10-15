@@ -1,4 +1,6 @@
 #include </home/anarbatti24/Programs/BinaroSolver/v3/helperv3.hpp>
+#include <concepts>
+#include <bit>
 
 /**
  * @brief Function to read from the file
@@ -88,7 +90,7 @@ void solveGrid(GridV2& grid) {
 		}
 
 		while (rowQueue) {
-			
+
 			COUNT(rowEvaluations);
 			unsigned r = std::countr_zero(rowQueue);
 			rowQueue &= rowQueue - 1;
@@ -115,7 +117,7 @@ void solveGrid(GridV2& grid) {
 			// Fills in the other bits when we have 5 of a bit
 			zeros |= (~ones  & lineMask)  * (onesCount == 5);
 			ones  |= (~zeros & lineMask)  * (zerosCount == 5);
-			
+
 			currentRow.ones = ones;
 			currentRow.zeros = zeros;
 
@@ -151,10 +153,9 @@ void solveGrid(GridV2& grid) {
 			colQueue &= colQueue - 1;
 			Line& currentCol = grid.cols[c];
 
-
 			uint16_t ones  = currentCol.ones;
 			uint16_t zeros = currentCol.zeros;
-			
+
 			uint16_t oldOnes  = ones;
 			uint16_t oldZeros = zeros;
 
