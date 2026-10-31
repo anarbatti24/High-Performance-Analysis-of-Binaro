@@ -6,9 +6,24 @@
 #include <fstream>
 #include "../helper.hpp"
 
-constexpr int offset = 9;
 extern long rowEvaluations;
 extern long colEvaluations;
+
+
+struct Line {
+
+	uint16_t ones = 0b0;
+	uint16_t zeros = 0b0;
+};
+
+struct GridV2 {
+
+	Line rows[10];
+	Line cols[10];
+};
+
+using PuzzleSetV2 = std::vector<GridV2>;
+
 
 /**
  * @brief Function to read from the file

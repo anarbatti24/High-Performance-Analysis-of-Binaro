@@ -1,4 +1,4 @@
-#include "/home/anarbatti24/Programs/BinaroSolver/v2/helperv2.hpp"
+#include "helperv2.hpp"
 #include <bitset>
 #include <sys/prctl.h>
 #include <linux/prctl.h>
@@ -11,9 +11,9 @@ long colEvaluations = 0;
 int main() {
 
 	//CHANGED FILE
-	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/binaro.txt");
-	std::ofstream outputFile("/home/anarbatti24/Programs/BinaroSolver/v2/solutionsv2.txt");
-	std::ifstream answerKeyFile("/home/anarbatti24/Programs/BinaroSolver/solutions.txt");
+	std::ifstream file("../binaro.txt");
+	std::ofstream outputFile("solutionsv2.txt");
+	std::ifstream answerKeyFile("../solutions.txt");
 
 	if (!file.is_open() || !outputFile.is_open() || !answerKeyFile.is_open()) {
 
@@ -70,7 +70,7 @@ int main() {
 
 	outputFile.close();
 
-	std::ifstream testFile("/home/anarbatti24/Programs/BinaroSolver/v2/solutionsv2.txt");
+	std::ifstream testFile("solutionsv2.txt");
 
 	validate(answerKeyFile, testFile);
 	std::cout << "TIME TAKEN: " << elapsed << '\n';

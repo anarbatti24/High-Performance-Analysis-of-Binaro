@@ -1,4 +1,4 @@
-#include "/home/anarbatti24/Programs/BinaroSolver/v1/helperv1.hpp"
+#include "helperv1.hpp"
 #include <chrono>
 #include <fcntl.h>
 #include <unistd.h>
@@ -7,9 +7,9 @@
 
 int main() {
 
-	std::ifstream file("/home/anarbatti24/Programs/BinaroSolver/binaro.txt");
-	std::ofstream outputFile("/home/anarbatti24/Programs/BinaroSolver/v1/solutionsv1.txt");
-	std::ifstream answer_keyFile("/home/anarbatti24/Programs/BinaroSolver/solutions.txt");
+	std::ifstream file("../binaro.txt");
+	std::ofstream outputFile("../solutionsv1.txt");
+	std::ifstream answer_keyFile("../solutions.txt");
 
 
 	if (!file.is_open()) {
@@ -62,7 +62,7 @@ int main() {
 	writeToFile(outputFile, puzzles);
 	outputFile.close();
 
-	std::ifstream testFile("/home/anarbatti24/Programs/BinaroSolver/v1/solutionsv1.txt");
+	std::ifstream testFile("solutionsv1.txt");
 
 
 	validate(answer_keyFile, testFile);

@@ -7,6 +7,8 @@
 #include "../helper.hpp"
 
 
+using Grid = std::array<std::array<int, COLS>, ROWS>;
+using PuzzleSet = std::vector<Grid>;
 
 /**
  * Function to read from file into grid
@@ -80,6 +82,11 @@ void iterateRows(Grid& grid);
  **/
 bool done(Grid& grid);
 
-
+/**
+ * @brief Function to take the opposite of the current number 0 -> 1, 1 -> 0
+ *
+ * @param bit  The number we want to take the opposite of
+ **/
+int opposite(int opposite);
 
 #endif

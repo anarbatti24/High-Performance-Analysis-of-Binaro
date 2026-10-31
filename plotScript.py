@@ -55,7 +55,7 @@ metrics = [
     }
 ]
 
-versions = ["V1", "V2", "V3"]
+versions = ["V1", "V2", "V2b"]
 colors = ["#3478C4", "#4BA65D", "#9360D4"]
 
 # -------------------------------
@@ -65,7 +65,7 @@ fig, axes = plt.subplots(4, 2, figsize=(12, 13))
 fig.patch.set_facecolor("#F7F8F8")
 
 fig.suptitle(
-    "Performance Metrics Comparison: V1 vs V2 vs V3",
+    "Performance Metrics Comparison: V1 vs V2 vs V2b",
     fontsize=19,
     fontweight="bold",
     y=0.98
@@ -130,7 +130,7 @@ for ax, metric in zip(axes.flat, metrics):
 
     ax.text(
         0.60, 0.94,
-        f"Reduction: {reduction:.1f}%\n(V1 → V3)",
+        f"Reduction: {reduction:.1f}%\n(V1 → V2b)",
         transform=ax.transAxes,
         ha="center",
         va="top",
@@ -166,7 +166,7 @@ plt.tight_layout(rect=[0.03, 0.055, 0.98, 0.96])
 
 # Save a high-resolution image
 plt.savefig(
-    "/home/anarbatti24/Programs/BinaroSolver/images/performance_comparison.png",
+    "images/performance_comparison.png",
     dpi=300,
     bbox_inches="tight",
     facecolor=fig.get_facecolor()

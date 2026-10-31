@@ -4,11 +4,11 @@
 #include <iostream>
 #include <array>
 #include <fstream>
-#include "/home/anarbatti24/Programs/BinaroSolver/helper.hpp"
+#include "../helper.hpp"
 #include <deque>
 #include <algorithm>
+#include "../v2/helperv2.hpp"
 
-constexpr int offset = 9;
 constexpr uint16_t lineMask = 0x3FF;
 
 extern long rowEvaluations;
