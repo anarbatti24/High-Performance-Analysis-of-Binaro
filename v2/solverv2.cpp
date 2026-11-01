@@ -10,19 +10,13 @@ long colEvaluations = 0;
 
 int main() {
 
-	//CHANGED FILE
-	std::ifstream file("../binaro.txt");
-	std::ofstream outputFile("solutionsv2.txt");
-	std::ifstream answerKeyFile("../solutions.txt");
 
-	if (!file.is_open() || !outputFile.is_open() || !answerKeyFile.is_open()) {
+	// Try the v2b path first
+	std::ifstream file;
+	std::ifstream answerKeyFile;
+	std::ofstream outputFile;
 
-		std::cout << "File could not open" << '\n';
-		return (-1);
-	}
-
-
-	//std::cout << "HELLO" << '\n';
+	fileValidation("binaro.txt", "solutions.txt", "v2", "solutionsv2.txt", file, answerKeyFile, outputFile);
 
 	PuzzleSetV2 puzzles = {};
 	puzzles.reserve(100'000);

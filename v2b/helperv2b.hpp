@@ -1,5 +1,5 @@
-#ifndef HELPERV3_HPP
-#define HELPERV3_HPP
+#ifndef HELPERV2B_HPP
+#define HELPERV2B_HPP
 
 #include <iostream>
 #include <array>
@@ -15,12 +15,6 @@ extern long rowEvaluations;
 extern long colEvaluations;
 extern long reseedEvaluations;
 
-#ifdef COUNT_EVALS
-	#define COUNT(c) (++(c))
-#else
-	#define COUNT(c) ((void)0)
-#endif
-
 
 /**
  * @brief Function to read from the file
@@ -30,20 +24,6 @@ extern long reseedEvaluations;
  **/
 void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle);
 
-
-/**
- * @brief Function to see whether we're done with the grid
- *
- **/
-bool done(GridV2& grid);
-
-
-/**
- * Function to solve grids (combines solving rows and columns into 1 call so we can make the rowQueue and colQueue explicitly local)
- *
- * @param grid	The grid we're solving
- **/
-void solveGrid(GridV2& grid);
 
 
 /**
@@ -55,6 +35,7 @@ void solveGrid(GridV2& grid);
 void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle);
 
 
+
 /**
  * @brief Function to print all puzzles in the PuzzleSet to the console
  * 
@@ -62,5 +43,21 @@ void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle);
  **/
 void printPuzzleSetV2(const PuzzleSetV2& puzzleSet);
 
+
+
+/**
+ * @brief Function to see whether we're done with the grid
+ *
+ **/
+bool done(GridV2& grid);
+
+
+
+/**
+ * Function to solve grids (combines solving rows and columns into 1 call so we can make the rowQueue and colQueue explicitly local)
+ *
+ * @param grid	The grid we're solving
+ **/
+void solveGrid(GridV2& grid);
 
 #endif

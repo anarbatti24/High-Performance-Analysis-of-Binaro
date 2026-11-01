@@ -52,6 +52,92 @@ void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle) {
 
 
 /**
+ * Function to write to the file
+ *
+ * @param file		The file we're writing to
+ * @param puzzle 	The puzzleSet we're writing from
+ **/
+void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle) {
+
+	for (size_t i = 0; i < puzzle.size(); i++) {
+	
+		for (int r =  ROWS - 1; r >= 0; r--) {
+		
+			uint16_t row = puzzle[i].rows[r].ones;
+
+			for (int c = COLS - 1; c >= 0; c--) {
+				
+				int bit = (row >> c) & 1;
+
+				file << bit << ' ';
+
+			}
+			file << '\n';
+
+		}
+		file << '\n';
+	}
+
+}
+
+
+
+/**
+ * @brief Function to print all puzzles in the PuzzleSet to the console
+ * 
+ * @param puzzleSet The vector of puzzles to print
+ **/
+void printPuzzleSetV2(const PuzzleSetV2& puzzleSet) {
+
+	for (int i = 0; i < 100'000; i++) {
+        
+		for (int r = ROWS - 1; r >= 0; r--) {
+            
+			uint16_t onesRow  = puzzleSet[i].rows[r].ones;
+            		uint16_t zerosRow = puzzleSet[i].rows[r].zeros;
+
+            		for (int c = COLS - 1; c >= 0; c--) {
+        
+				int isOne  = (onesRow >> c) & 1;
+                		int isZero = (zerosRow >> c) & 1;
+
+				if (isOne) {
+				    std::cout << "1 ";
+				} 
+				
+				else if (isZero) {
+				    std::cout << "0 ";
+				} 
+				
+				else {
+				    std::cout << ". "; 
+				}
+            		}
+            		std::cout << '\n';
+		}
+        	std::cout << '\n';
+    	}
+}
+
+
+
+/**
+ * @brief Function to see whether we're done with the grid
+ *
+ **/
+bool done(GridV2& grid) {
+
+	for (int r = 0; r < ROWS; r++) {
+
+		if ((grid.rows[r].ones | grid.rows[r].zeros) != 0b0000001111111111) { return (false); }
+	}
+
+	return (true);
+}
+
+
+
+/**
  * @brief Function to solve the rows of a grid
  *
  * @param grid The grid whose rows we are solving
@@ -155,88 +241,4 @@ void solveCols(GridV2& grid) {
 		    grid.rows[bitShift].zeros |= (1 << c);
 		}
 	}
-}
-
-
-
-/**
- * @brief Function to see whether we're done with the grid
- *
- **/
-bool done(GridV2& grid) {
-
-	for (int r = 0; r < ROWS; r++) {
-
-		if ((grid.rows[r].ones | grid.rows[r].zeros) != 0b0000001111111111) { return (false); }
-	}
-
-	return (true);
-}
-
-
-
-/**
- * Function to write to the file
- *
- * @param file		The file we're writing to
- * @param puzzle 	The puzzleSet we're writing from
- **/
-void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle) {
-
-	for (size_t i = 0; i < puzzle.size(); i++) {
-	
-		for (int r =  ROWS - 1; r >= 0; r--) {
-		
-			uint16_t row = puzzle[i].rows[r].ones;
-
-			for (int c = COLS - 1; c >= 0; c--) {
-				
-				int bit = (row >> c) & 1;
-
-				file << bit << ' ';
-
-			}
-			file << '\n';
-
-		}
-		file << '\n';
-	}
-
-}
-
-/**
- * @brief Function to print all puzzles in the PuzzleSet to the console
- * 
- * @param puzzleSet The vector of puzzles to print
- **/
-void printPuzzleSetV2(const PuzzleSetV2& puzzleSet) {
-
-	for (int i = 0; i < 100'000; i++) {
-        
-		for (int r = ROWS - 1; r >= 0; r--) {
-            
-			uint16_t onesRow  = puzzleSet[i].rows[r].ones;
-            		uint16_t zerosRow = puzzleSet[i].rows[r].zeros;
-
-            		for (int c = COLS - 1; c >= 0; c--) {
-        
-				int isOne  = (onesRow >> c) & 1;
-                		int isZero = (zerosRow >> c) & 1;
-
-				if (isOne) {
-				    std::cout << "1 ";
-				} 
-				
-				else if (isZero) {
-				    std::cout << "0 ";
-				} 
-				
-				else {
-				    std::cout << ". "; 
-				}
-            		}
-            		std::cout << '\n';
-		}
-        	std::cout << '\n';
-    	}
 }

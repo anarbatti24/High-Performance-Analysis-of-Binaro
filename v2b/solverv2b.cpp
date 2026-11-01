@@ -13,16 +13,11 @@ long reseedEvaluations	= 0;
 
 int main() {
 
-	//CHANGED FILE
-	std::ifstream file("../binaro.txt");
-	std::ofstream outputFile("solutionsv2b.txt");
-	std::ifstream answerKeyFile("../solutions.txt");
+	std::ifstream file;
+	std::ifstream answerKeyFile;
+	std::ofstream outputFile;
 
-	if (!file.is_open() || !outputFile.is_open() || !answerKeyFile.is_open()) {
-
-		std::cout << "File could not open" << '\n';
-		return (-1);
-	}
+	fileValidation("binaro.txt", "solutions.txt", "v2b", "solutionsv2b.txt", file, answerKeyFile, outputFile);
 
 	PuzzleSetV2 puzzles = {};
 

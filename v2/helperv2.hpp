@@ -25,6 +25,7 @@ struct GridV2 {
 using PuzzleSetV2 = std::vector<GridV2>;
 
 
+
 /**
  * @brief Function to read from the file
  * 
@@ -33,28 +34,6 @@ using PuzzleSetV2 = std::vector<GridV2>;
  **/
 void readFromFile(std::ifstream& file, PuzzleSetV2& puzzle);
 
-
-/**
- * @brief Function to solve the rows of a grid
- *
- * @param grid The grid whose rows we are solving
- **/
-void solveRows(GridV2& grid);
-
-
-/**
- * @brief Function to solve the columns of a grid
- *
- * @param grid
- **/
-void solveCols(GridV2& grid);
-
-
-/**
- * @brief Function to see whether we're done with the grid
- *
- **/
-bool done(GridV2& grid);
 
 
 /**
@@ -73,6 +52,31 @@ void writeToFile(std::ofstream& file, PuzzleSetV2& puzzle);
  * @param puzzleSet The vector of puzzles to print
  **/
 void printPuzzleSetV2(const PuzzleSetV2& puzzleSet);
+
+
+
+/**
+ * @brief Function to see whether we're done with the grid
+ *
+ **/
+bool done(GridV2& grid);
+
+
+/**
+ * @brief Function to solve the rows of a grid
+ *
+ * @param grid The grid whose rows we are solving
+ **/
+void solveRows(GridV2& grid);
+
+
+
+/**
+ * @brief Function to solve the columns of a grid
+ *
+ * @param grid
+ **/
+void solveCols(GridV2& grid);
 
 #endif
 

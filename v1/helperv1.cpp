@@ -1,13 +1,39 @@
 #include "/home/anarbatti24/Programs/BinaroSolver/v1/helperv1.hpp"
 
 
+
+/**
+ * @brief Function to read from a file into the PuzzleSet
+ *
+ * @param file 		The file we're reading from
+ * @param puzzles	The PuzzleSet we're reading into
+ **/
+void readFromFile(std::ifstream& file, PuzzleSet& puzzles) {
+    
+	Grid grid;
+
+    	while (file) {
+        	for (int r = 0; r < ROWS; r++) {
+            		for (int c = 0; c < COLS; c++) {
+                		if (!(file >> grid[r][c])) {
+                    			return;
+				}
+			}
+		}
+
+        puzzles.push_back(grid);
+    }
+}
+
+
+
 /**
  * Function to write to a file
  *
  * @param file 		The file we're writing to
  * @param puzzles 	The PuzzleSet we're writing from
  **/
-inline void writeToFile(std::ofstream& file, const PuzzleSet& puzzles) {
+void writeToFile(std::ofstream& file, const PuzzleSet& puzzles) {
 
 	for (long unsigned int i = 0; i < puzzles.size(); i++) {
 		for (int r = 0; r < ROWS; r++) {
@@ -65,30 +91,6 @@ inline void printPuzzleSet(const PuzzleSet& puzzles) {
 		std::cout << '\n';
 	}
 
-}
-
-
-/**
- * @brief Function to read from a file into the PuzzleSet
- *
- * @param file 		The file we're reading from
- * @param puzzles	The PuzzleSet we're reading into
- **/
-void readFromFile(std::ifstream& file, PuzzleSet& puzzles) {
-    
-	Grid grid;
-
-    	while (file) {
-        	for (int r = 0; r < ROWS; r++) {
-            		for (int c = 0; c < COLS; c++) {
-                		if (!(file >> grid[r][c])) {
-                    			return;
-				}
-			}
-		}
-
-        puzzles.push_back(grid);
-    }
 }
 
 
@@ -278,6 +280,7 @@ void iterateRows(Grid& grid) {
 }
 
 
+
 /**
  * @brief Function to take the opposite of the current number 0 -> 1, 1 -> 0
  *
@@ -294,6 +297,8 @@ inline int opposite(int opposite) {
 	}
 	return (opp);
 }
+
+
 
 /**
  * @brief Function to control how long we run for (as long as there are 9s present)

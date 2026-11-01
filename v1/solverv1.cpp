@@ -7,16 +7,17 @@
 
 int main() {
 
-	std::ifstream file("../binaro.txt");
-	std::ofstream outputFile("../solutionsv1.txt");
-	std::ifstream answer_keyFile("../solutions.txt");
 
+	// Try the v1 path first
+	std::ifstream file;
 
-	if (!file.is_open()) {
-		std::cout << "Could not open file" << '\n';
-		return (1);
-	}
+	// Do the exact same thing for the answer key
+	std::ifstream answerKeyFile;
 
+	std::ofstream outputFile;
+
+	fileValidation("binaro.txt", "solutions.txt", "v1", "solutionsv1.txt", file, answerKeyFile, outputFile);
+	
 	PuzzleSet puzzles = {};
 
 	readFromFile(file, puzzles);
@@ -65,7 +66,7 @@ int main() {
 	std::ifstream testFile("solutionsv1.txt");
 
 
-	validate(answer_keyFile, testFile);
+	validate(answerKeyFile, testFile);
 	std::cout << "TIME TAKEN: " << elapsed << '\n';
 
 

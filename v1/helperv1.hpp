@@ -10,14 +10,25 @@
 using Grid = std::array<std::array<int, COLS>, ROWS>;
 using PuzzleSet = std::vector<Grid>;
 
+
+
 /**
  * Function to read from file into grid
  *
  * @param file 		The file we're reading from: 'binaro.txt'
  * @param puzzles 	The puzzleSet we're populating
  **/
-//void readFromFile(std::ifstream& file, Grid& grid);
 void readFromFile(std::ifstream& file, PuzzleSet& puzzles);
+
+
+
+/**
+ * Function to write to the file
+ *
+ * @param file		The file we're writing to
+ * @param puzzle 	The puzzleSet we're writing from
+ **/
+void writeToFile(std::ofstream& file, const PuzzleSet& puzzles);
 
 
 
@@ -81,6 +92,8 @@ void iterateRows(Grid& grid);
  * @param grid
  **/
 bool done(Grid& grid);
+
+
 
 /**
  * @brief Function to take the opposite of the current number 0 -> 1, 1 -> 0
