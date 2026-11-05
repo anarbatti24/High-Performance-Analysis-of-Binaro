@@ -21,7 +21,7 @@ Tabular data can be viewed through 'Information.txt'
 Graphical Results are below as follows (Updated as new versions are benchmarked):
 
 <p align="center">
-  <img src="/images/performance_comparison.png" width="900">
+  <img src="/images/performance_comparison_v2c.png" width="900">
 </p>
 
 **Project Information and Direction**
@@ -41,7 +41,7 @@ As discussed above, the total memory footprint of the simulation is 40MB. My L3 
 
 Additionally, v1 solves each puzzle sequentially. It must solve puzzle 1 before going to puzzle 2 and so on. Given that each binaro grid can be solved independently of other grids, it makes sense to parallelize the operation of solving to reduce total solve time across 100'000 puzzles, therefore, it makes sense to introduce multi-threading. **v3 addresses this.**
 
-Lastly, v1 steps through rows/columns sequentially. In other words, I would first need to input data into row 1 and then input data into row 5, even if the same rule could be applied to both. The downside being that each row/column is doing a lot of waiting and we're burning through a lot of clock cycles, ultimately resulting in a higher overall runtime. **v5 addresses this.**
+Lastly, v1 steps through rows/columns sequentially. In other words, I would first need to input data into row 1 and then input data into row 5, even if the same rule could be applied to both. The downside being that each row/column is doing a lot of waiting and we're burning through a lot of clock cycles, ultimately resulting in a higher overall runtime. **v4 addresses this.**
 
 
 **v2 (complete):**
@@ -95,13 +95,17 @@ first, I start by isolating the highest bit in the Line, so that I can send it, 
 
 Therefore, I need to send this to column 9 with a bitshift of 2.
 
-A mistake that I made when officially benchmarking was sending the entire line through every time, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, under standard conditions, dropped to **3.5 μs/puzzle** (was 8 μs/puzzle before, as reported on my resume).
+A mistake that I made when officially benchmarking was sending the entire line through every time, NOT just the newly found bits, resulting in redundant operations. When sending just the new bits to ensure no redundant operations, my solve time, under standard conditions, dropped to **2.71 μs/puzzle** .
 
 **v2b (complete)**
 
-Version 2b introduced a work-list algorithm to iterate over and solve only the rows and columns that have been changed. In version 2, I had a fixed loop iterating over every single row and every single column every single time the solveRows() and solveCols() functions were called, respectively. I figured that this would result in unnecessary iterations; why look through every single column when only column 1 changed? Version 2b fixes this by using a worklist, realized by a uint16_t, (I'm starting to really like this data type 😅) which serves as an indicator for which rows and columns need processing. We simply loop over the uint16_t, extract the index of a set bit, operate on the corresponding row/column, toggle it off and continue until the uint16_t is 0. I theorized that this would reduce the amount of work required per row/column iteration and I was correc, under standard conditions, I found that Version 2b's solve time came in at **2.6 us/puzzle**.
+Version 2b introduced a work-list algorithm to iterate over and solve only the rows and columns that have been changed. In version 2, I had a fixed loop iterating over every single row and every single column every single time the solveRows() and solveCols() functions were called, respectively. I figured that this would result in unnecessary iterations; why look through every single column when only column 1 changed? Version 2b fixes this by using a worklist, realized by a uint16_t, (I'm starting to really like this data type 😅) which serves as an indicator for which rows and columns need processing. We simply loop over the uint16_t, extract the index of a set bit, operate on the corresponding row/column, toggle it off and continue until the uint16_t is 0. I theorized that this would reduce the amount of work required per row/column iteration and I was correc, under standard conditions, I found that Version 2b's solve time came in at **2.29 us/puzzle**.
 
 My initial approach was to use a 2 queues, specifically deques to store the information regarding which rows/columns to work on. However, the limitations of a deque became evident quickly. Firstly, I ran into a problem with repeated states. Suppose we are iterating through the rows and a row discovers a column, we add that to our column deque and continue iterating. As we continue iterating, another row also discvers the same column and since I didn't think to implement any checks, we would add that column to the column deque once again. While this isn't a fatal mistake, it is a bug that required fixing. To fix it, I went about performing a simple check using std::find to ensure that the index that I'm adding isn't already in the deque. Now approaching 5 am, I made the fix and benchmarked, only to find that my runtime had skyrocketed to 5.4 us/puzzle. This result didn't make any sense as I was, theoretically, doing mych less work per row/column iteration and therefore, less work overall. However, my implementation was suboptimal and the first place I decided to work on was the whole concept of the worklist. While std::find is a fast and acceptable approach, it is important to note that in the context of my program, std::find is not predictable. In some cases, it might return after the first iteration. On others, it might have to iterate all the way to the last element, therefore, the branch predictor would not be able to predict the result and we would introduce branch mispredictions. The cost of branch misprediction is around 20 cycles, multiplying that across a puzzle and multiplying that across the working set of 100,000 puzzles, it makes sense that we would incur a massive performance drop. As mentioned in the above paragraph, I decided that using a uint16_t to serve as my 'queue' would be much faster. I can simply toggle the the index of the bit that need solving, which natively takes care of duplicates (it doesn't matter if we toggle a bit on twice), therefore, I don't have to use any external STL algorithms. My new workflow was significantly simpler. If a row discovers, a column, we toggle that column's index 'On' in the column queue. If another row discovers the same column, we simply toggle it again. This isn't a problem as the cost of toggling the same bit twice is negligible (1 clock cycle). Then, when we solve the columns, we only run for the number of set bits in the column array. We extract the bit's index, solve the column associated with that index, clear the bit and move on to the next column(s). This seemed like the be-all-end-all approach to me and at 6 am, I ran it again. To my horror, my program didn't stop executing, I had an infinite loop. In my driver code, I would seed the rowQueue to be all elements but I wouldn't touch the colQueue as I had deemed it unnecessary. Turns out that not all puzzles have an initial row to solve and therefore, need a starting place in the columns. At 6:05, I implemented the fix and ran again. Once again, I was hit with an infinite loop (why is this a recurring problem??). I found out that sometimes the queues can empty completely while a puzzle is still not solved. Since my exit condition was to run until the puzzle was solved, we would simply stall. To fix this, I introduced a re-seed check condition. If a puzzle is not solved, but the queues are depleted, I simply re-seed the row and column queues for all states to try and restart the propagation mechanic. And finally, at 6:10, I ran it again and got a runtime of 2.6 μs/puzzle.
+
+
+**v2c (complete):**
+
 
 **v3 (planned):**
 
@@ -110,7 +114,7 @@ Version 3 will use multi-threading to parallelize puzzle completion. My CPU is t
 Once I get to this point, I'll be very interested to see how the threads (P-thread vs. E-thread) perform and the optimal 'division.' Maybe using just the 12 P-threads is faster than using them with the 8 E-threads...
 
 
-**v5 (planned):** 
+**v4 (planned):** 
 
 Given the nature of Binaro, different rows can have values inputted independently, meaning that if, in Row 1 and Row 5, I have '00,' I know that I should complete them as Row 1,5 = '1001,' in the same clock cycle. Point being, that I can give a **S**ingle **I**nstruction and alter **M**ultiple **D**ata **(SIMD)**. To implement this, I can use the AVX instruction set via the <immintrin.h> library. The YMM register, which is where AVX instructions are carried out, is able to hold 256 bits of information. Used in tandem with the optimization detailed in v2, I would be able to fit the bulk of the 32bit row/column integers within a single YMM register, meaning that SIMD would seem (on paper) to have a drastic impact on runtime.
 

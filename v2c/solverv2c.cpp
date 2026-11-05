@@ -1,22 +1,54 @@
 #include "helperv2c.hpp"
-#include <bitset>
-#include <sys/prctl.h>
-#include <linux/prctl.h>
+#include <chrono>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/prctl.h>
+#include <linux/prctl.h>
 
 int main() {
-
 	std::ifstream file;
 	std::ifstream answerKeyFile;
 	std::ofstream outputFile;
 
+	// Read from the files
 	fileValidation("binaro.txt", "solutions.txt", "v2c", "solutionsv2c.txt", file, answerKeyFile, outputFile);
 
+	PuzzleSetV2c puzzleSet = {};
+	readFromFile(file, puzzleSet);
 
-	PuzzleSetV2c puzzles = {};
+	// Initialize perf control 
+	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
 
-	readFromFile(file, puzzles);
+	auto start = std::chrono::steady_clock::now();
 
-	printPuzzleSetV2c(puzzles);
+	// Signal perf to start collecting hardware counters
+	if (perf_fd != -1) {
+		if (write(perf_fd, "enable\n", 7) == -1) { }
+	}
+
+	// Main loop
+	for (size_t i = 0; i < puzzleSet.size(); i++) {
+		solveGrid(puzzleSet, i);
+	}
+
+	// Signal perf to stop tracking
+	if (perf_fd != -1) {
+		if (write(perf_fd, "disable\n", 8) == -1) { }
+		close(perf_fd);
+	}
+
+	auto stop = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
+
+	writeToFile(outputFile, puzzleSet);
+	outputFile.close();
+
+	std::ifstream testFile("solutionsv2c.txt");
+	validate(answerKeyFile, testFile);
+
+	std::cout << "TIME TAKEN: " << elapsed.count() << " ns\n";
+
+	file.close();
+	answerKeyFile.close();
+	return 0;
 }

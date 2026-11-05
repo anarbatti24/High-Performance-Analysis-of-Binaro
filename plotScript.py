@@ -8,55 +8,55 @@ metrics = [
     {
         "title": "Solve Time (us/puzzle)",
         "unit": "us/puzzle",
-        "values": [29, 3.5, 2.6],
+        "values": [29, 2.71, 2.29, 1.64],
         "reduction": True
     },
     {
         "title": "Cycles (Billion)",
         "unit": "Cycles (Billion)",
-        "values": [6.148, 0.738, 0.553],
+        "values": [6.158, 0.568, 0.479, 0.342],
         "reduction": True
     },
     {
         "title": "Instructions (Billion)",
         "unit": "Instructions (Billion)",
-        "values": [5.403, 2.119, 1.123],
+        "values": [5.410, 1.217, 0.692, 1.075],
         "reduction": True
     },
     {
         "title": "L1D Misses (Thousand)",
         "unit": "Thousand",
-        "values": [503.648, 114.741, 74.982],
+        "values": [562.052, 89.774, 65.249, 73.712],
         "reduction": True
     },
     {
         "title": "LLC Loads (Thousand)",
         "unit": "Thousand",
-        "values": [46.661, 7.024, 5.297],
+        "values": [50.521, 4.648, 2.892, 2.758],
         "reduction": True
     },
     {
         "title": "LLC Misses (Thousand)",
         "unit": "Thousand",
-        "values": [5.896, 1.151, 0.523],
+        "values": [6.117, 1.070, 0.563, 0.717],
         "reduction": True
     },
     {
         "title": "Branch Instructions (Billion)",
         "unit": "Billion",
-        "values": [1.714, 0.170, 0.078],
+        "values": [1.71, 0.72, 0.033, 0.059],
         "reduction": True
     },
     {
         "title": "Branch Misses (Million)",
         "unit": "Million",
-        "values": [196.295, 9.613, 9.362],
+        "values": [194.626, 9.543, 9.842, 0.105],
         "reduction": True
     }
 ]
 
-versions = ["V1", "V2", "V2b"]
-colors = ["#3478C4", "#4BA65D", "#9360D4"]
+versions = ["V1", "V2", "V2b", "V2c"]
+colors = ["#3478C4", "#4BA65D", "#9360D4", "#FF0000"]
 
 # -------------------------------
 # 2. Configure the figure
@@ -65,7 +65,7 @@ fig, axes = plt.subplots(4, 2, figsize=(12, 13))
 fig.patch.set_facecolor("#F7F8F8")
 
 fig.suptitle(
-    "Performance Metrics Comparison: V1 vs V2 vs V2b",
+    "Performance Metrics Comparison: V1 vs V2 vs V2b vs V2c",
     fontsize=19,
     fontweight="bold",
     y=0.98
@@ -126,11 +126,11 @@ for ax, metric in zip(axes.flat, metrics):
         )
 
     # Percentage reduction from V1 to V3
-    reduction = (1 - values[2] / values[0]) * 100
+    reduction = (1 - values[3] / values[0]) * 100
 
     ax.text(
         0.60, 0.94,
-        f"Reduction: {reduction:.1f}%\n(V1 → V2b)",
+        f"Reduction: {reduction:.1f}%\n(V1 → V2c)",
         transform=ax.transAxes,
         ha="center",
         va="top",
@@ -166,7 +166,7 @@ plt.tight_layout(rect=[0.03, 0.055, 0.98, 0.96])
 
 # Save a high-resolution image
 plt.savefig(
-    "images/performance_comparison.png",
+    "images/performance_comparison_v2c.png",
     dpi=300,
     bbox_inches="tight",
     facecolor=fig.get_facecolor()
