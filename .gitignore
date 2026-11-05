@@ -1,0 +1,19 @@
+# compiler / perf junk
+*.o
+*.gch
+*.out
+a.out
+perf.data
+perf.data.old
+# built solvers
+v1/solverv1
+v2/solverv2
+v2b/solverv2b
+v2c/solverv2c
+v2c/solverv2
+v2c/solverv2cunsolved
+# generated solver output (keep solutions.txt — that is the answer key)
+**/solutionsv1.txt
+**/solutionsv2.txt
+**/solutionsv2b.txt
+**/solutionsv2c.txt
