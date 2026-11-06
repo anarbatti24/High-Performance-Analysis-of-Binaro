@@ -148,12 +148,12 @@
 
        341,973,580      cpu_core/cycles/                                                        ( +-  0.08% )
      1,075,025,862      cpu_core/instructions/                                                  ( +-  0.06% )
-            63,866      cpu_core/cache-references/                                              ( +-  1.59% )
-            13,435      cpu_core/cache-misses/                                                  ( +-  4.68% )
-         7,848,071      cpu_core/L1-dcache-loads/                                               ( +-  0.85% )
-            73,712      cpu_core/L1-dcache-load-misses/                                         ( +-  0.59% )
-             2,758      cpu_core/LLC-loads/                                                     ( +-  4.29% )
-               717      cpu_core/LLC-load-misses/                                               ( +-  6.13% )
+            67,224      cpu_core/cache-references/                                              ( +-  1.59% )
+            15,263      cpu_core/cache-misses/                                                  ( +-  4.68% )
+        39,347,828      cpu_core/L1-dcache-loads/                                               ( +-  0.85% )
+            74,865      cpu_core/L1-dcache-load-misses/                                         ( +-  0.59% )
+             3,257      cpu_core/LLC-loads/                                                     ( +-  4.29% )
+               899      cpu_core/LLC-load-misses/                                               ( +-  6.13% )
         59,109,111      cpu_core/branch-instructions/                                           ( +-  0.13% )
            105,304      cpu_core/branch-misses/                                                 ( +-  0.33% )
 

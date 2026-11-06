@@ -10,11 +10,12 @@ int main() {
 	std::ifstream answerKeyFile;
 	std::ofstream outputFile;
 
+	std::vector<Line> PuzzleSetV2c;
+
 	// Read from the files
 	fileValidation("binaro.txt", "solutions.txt", "v2c", "solutionsv2c.txt", file, answerKeyFile, outputFile);
 
-	PuzzleSetV2c puzzleSet = {};
-	readFromFile(file, puzzleSet);
+	readFromFile(file, PuzzleSetV2c);
 
 	// Initialize perf control 
 	int perf_fd = open("/tmp/perf_ctl.fifo", O_WRONLY);
@@ -26,10 +27,8 @@ int main() {
 		if (write(perf_fd, "enable\n", 7) == -1) { }
 	}
 
-	// Main loop
-	for (size_t i = 0; i < puzzleSet.size(); i++) {
-		solveGrid(puzzleSet, i);
-	}
+	// ACTUAL CALL TO THE SOLVER
+	solveGrid(PuzzleSetV2c);
 
 	// Signal perf to stop tracking
 	if (perf_fd != -1) {
@@ -40,7 +39,7 @@ int main() {
 	auto stop = std::chrono::steady_clock::now();
 	auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
 
-	writeToFile(outputFile, puzzleSet);
+	writeToFile(outputFile, PuzzleSetV2c);
 	outputFile.close();
 
 	std::ifstream testFile("solutionsv2c.txt");
@@ -50,5 +49,6 @@ int main() {
 
 	file.close();
 	answerKeyFile.close();
-	return 0;
+	
+	return (0);
 }

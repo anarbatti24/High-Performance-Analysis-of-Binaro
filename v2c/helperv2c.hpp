@@ -11,21 +11,16 @@
 typedef unsigned __int128 uint128_t;
 constexpr int SIZE = 100;
 
+// AoS
+struct Line {
 
+	uint128_t ones = 0b0;
+	uint128_t zeros = 0b0;
 
-struct PuzzleSetV2c {
-
-	std::vector<uint128_t> ones;
-	std::vector<uint128_t> zeros;
-
-	void reserve(size_t n) {
-
-		ones.reserve(n);
-		zeros.reserve(n);
-	}
-
-	size_t size() const { return ones.size(); }
 };
+
+
+extern std::vector<Line> PuzzleSetV2c; // PuzzleSetV2c[i].ones
 
 
 
@@ -35,7 +30,7 @@ struct PuzzleSetV2c {
  * @param file	 	The file we're reading from
  * @param puzzleSet 	The set of puzzles we're populating
  **/
-void readFromFile(std::ifstream& file, PuzzleSetV2c& puzzleSet);
+void readFromFile(std::ifstream& file, std::vector<Line>& puzzleSet);
 
 
 
@@ -45,7 +40,7 @@ void readFromFile(std::ifstream& file, PuzzleSetV2c& puzzleSet);
  * @param file 		The file we're writing to
  * @param puzzleSet 	The puzzle set we're writing from
  **/
-void writeToFile(std::ofstream& file, const PuzzleSetV2c& puzzleSet);
+void writeToFile(std::ofstream& file, const std::vector<Line>& puzzleSet);
 
 
 
@@ -54,7 +49,7 @@ void writeToFile(std::ofstream& file, const PuzzleSetV2c& puzzleSet);
  * 
  * @param puzzleSet The puzzles to print
  **/
-void printPuzzleSetV2c(const PuzzleSetV2c& puzzleSet);
+void printPuzzleSetV2c(const std::vector<Line>& puzzleSet);
 
 
 
@@ -64,7 +59,7 @@ void printPuzzleSetV2c(const PuzzleSetV2c& puzzleSet);
  * @param puzzleSet	The puzzles we're trying to solve
  * @param index  	The index of the puzzle we are solving
  **/
-void solveGrid(PuzzleSetV2c& puzzleSet, size_t index);
+void solveGrid(std::vector<Line>& puzzleSet);
 
 
 

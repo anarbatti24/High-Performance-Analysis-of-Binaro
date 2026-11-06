@@ -26,19 +26,19 @@ metrics = [
     {
         "title": "L1D Misses (Thousand)",
         "unit": "Thousand",
-        "values": [562.052, 89.774, 65.249, 73.712],
+        "values": [562.052, 89.774, 65.249, 67.224],
         "reduction": True
     },
     {
         "title": "LLC Loads (Thousand)",
         "unit": "Thousand",
-        "values": [50.521, 4.648, 2.892, 2.758],
+        "values": [50.521, 4.648, 2.892, 3.257],
         "reduction": True
     },
     {
         "title": "LLC Misses (Thousand)",
         "unit": "Thousand",
-        "values": [6.117, 1.070, 0.563, 0.717],
+        "values": [6.117, 1.070, 0.563, 0.899],
         "reduction": True
     },
     {
@@ -149,18 +149,6 @@ for ax, metric in zip(axes.flat, metrics):
     ax.spines["left"].set_alpha(0.5)
     ax.spines["bottom"].set_alpha(0.5)
 
-# -------------------------------
-# 4. Add a summary at the bottom
-# -------------------------------
-# fig.text(
-#     0.5, 0.025,
-#     "Average Solve Time (us/puzzle):   "
-#     "V1: 29   |   V2: 3.5   |   V3: 2.6",
-#     ha="center",
-#     fontsize=11,
-#     fontweight="bold",
-#     color="#17294D"
-# )
 
 plt.tight_layout(rect=[0.03, 0.055, 0.98, 0.96])
 

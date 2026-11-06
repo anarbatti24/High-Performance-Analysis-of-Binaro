@@ -8,8 +8,8 @@
  * @param file	 	The file we're reading from
  * @param puzzleSet 	The set of puzzles we're populating
  **/
-void readFromFile(std::ifstream& file, PuzzleSetV2c& puzzleSet) {
-	
+void readFromFile(std::ifstream& file, std::vector<Line>& puzzleSet) {
+
 	puzzleSet.reserve(100'000);
 
 	std::string line;
@@ -17,7 +17,7 @@ void readFromFile(std::ifstream& file, PuzzleSetV2c& puzzleSet) {
 	uint128_t currentZeros = 0;
 
 	int rowCount = 0;
-	// int counter = 0;
+	int index = 0;
 
 	while (std::getline(file, line)) {
 
@@ -48,14 +48,10 @@ void readFromFile(std::ifstream& file, PuzzleSetV2c& puzzleSet) {
 
 		if (rowCount == 10) {
 		
-			puzzleSet.ones.push_back(currentOnes);
-			puzzleSet.zeros.push_back(currentZeros);
-			// std::cout << &puzzleSet.ones[counter] << '\n';
-			// std::cout << &puzzleSet.zeros[counter] << '\n';
+			puzzleSet.push_back({currentOnes, currentZeros});
 			currentOnes = 0;
 			currentZeros = 0;
 			rowCount = 0;
-			// counter++;
 		}
 	}
 }
@@ -68,11 +64,11 @@ void readFromFile(std::ifstream& file, PuzzleSetV2c& puzzleSet) {
  * @param file 		The file we're writing to
  * @param puzzleSet 	The puzzle set we're writing from
  **/
-void writeToFile(std::ofstream& file, const PuzzleSetV2c& puzzleSet) {
+void writeToFile(std::ofstream& file, const std::vector<Line>& puzzleSet) {
 
 	for (size_t i = 0; i < puzzleSet.size(); i++) {
-	
-		uint128_t ones = puzzleSet.ones[i];
+
+		uint128_t ones = puzzleSet[i].ones;
 
 		for (int bitIndex = 0; bitIndex < SIZE; bitIndex++) {
 		
@@ -95,12 +91,13 @@ void writeToFile(std::ofstream& file, const PuzzleSetV2c& puzzleSet) {
  * 
  * @param puzzleSet The puzzles to print
  **/
-void printPuzzleSetV2c(const PuzzleSetV2c& puzzleSet) {
+// void printPuzzleSetV2c(const PuzzleSetV2c& puzzleSet) {
+void printPuzzleSetV2c(const std::vector<Line>& puzzleSet) {
 
 	for (size_t i = 0; i < puzzleSet.size(); i++) {
-		
-		uint128_t ones = puzzleSet.ones[i];
-		uint128_t zeros = puzzleSet.zeros[i];
+
+		uint128_t ones = puzzleSet[i].ones;
+		uint128_t zeros = puzzleSet[i].zeros;
 
 		for (int bitIndex = 0; bitIndex < SIZE; bitIndex++) {
 
@@ -172,53 +169,56 @@ inline uint128_t pdep128(uint16_t src, uint128_t mask) {
  * @param puzzleSet	The puzzles we're trying to solve
  * @param index  	The index of the puzzle we are solving
  **/
-void solveGrid(PuzzleSetV2c& puzzleSet, size_t index) {
-	
-	uint128_t ones  = puzzleSet.ones[index];
-	uint128_t zeros = puzzleSet.zeros[index];
+void solveGrid(std::vector<Line>& puzzleSet) {
 
-	auto applyRows = [&]() {
+	for (size_t index = 0; index < puzzleSet.size(); index++) {
 
-		zeros |= ((ones  >> 1 & ones  >> 2) & MASK_DBL_RIGHT) | ((ones  << 1 & ones  << 2) & MASK_DBL_LEFT);
-		ones  |= ((zeros >> 1 & zeros >> 2) & MASK_DBL_RIGHT) | ((zeros << 1 & zeros << 2) & MASK_DBL_LEFT);
-		zeros |= (ones  << 1) & ~ones  & (ones  >> 1) & MASK_GAP;
-		ones  |= (zeros << 1) & ~zeros & (zeros >> 1) & MASK_GAP;
-	
-		for (int r = 0; r < 10; ++r) {
-	
-			int s = 10 * r;
-			uint16_t o = (ones  >> s) & 0x3FF;
-			uint16_t z = (zeros >> s) & 0x3FF;
-			zeros |= uint128_t((~o & 0x3FF) * (__builtin_popcount(o) == 5)) << s;
-			ones  |= uint128_t((~z & 0x3FF) * (__builtin_popcount(z) == 5)) << s;
-		}
-	};
+		uint128_t ones = puzzleSet[index].ones;
+		uint128_t zeros = puzzleSet[index].zeros;
 
-	auto applyCols = [&]() {
+		auto applyRows = [&]() {
+
+			zeros |= ((ones  >> 1 & ones  >> 2) & MASK_DBL_RIGHT) | ((ones  << 1 & ones  << 2) & MASK_DBL_LEFT);
+			ones  |= ((zeros >> 1 & zeros >> 2) & MASK_DBL_RIGHT) | ((zeros << 1 & zeros << 2) & MASK_DBL_LEFT);
+			zeros |= (ones  << 1) & ~ones  & (ones  >> 1) & MASK_GAP;
+			ones  |= (zeros << 1) & ~zeros & (zeros >> 1) & MASK_GAP;
 		
-		zeros |= ((ones  >> 10 & ones  >> 20) & COL_DBL_DOWN) | ((ones  << 10 & ones  << 20) & COL_DBL_UP);
-		ones  |= ((zeros >> 10 & zeros >> 20) & COL_DBL_DOWN) | ((zeros << 10 & zeros << 20) & COL_DBL_UP);
-		zeros |= (ones  << 10) & ~ones  & (ones  >> 10) & COL_GAP;
-		ones  |= (zeros << 10) & ~zeros & (zeros >> 10) & COL_GAP;
-	
-		for (int c = 0; c < 10; ++c) {
-	
-			uint128_t mask = COL0 << c;
-			uint16_t o = pext128(ones,  mask);
-			uint16_t z = pext128(zeros, mask);
-			zeros |= pdep128((~o & 0x3FF) * (__builtin_popcount(o) == 5), mask);
-			ones  |= pdep128((~z & 0x3FF) * (__builtin_popcount(z) == 5), mask);
-		}
-	};
-	
-	while ((ones | zeros) != GRID_MASK) {
+			for (int r = 0; r < 10; ++r) {
+		
+				int s = 10 * r;
+				uint16_t o = (ones  >> s) & 0x3FF;
+				uint16_t z = (zeros >> s) & 0x3FF;
+				zeros |= uint128_t((~o & 0x3FF) * (__builtin_popcount(o) == 5)) << s;
+				ones  |= uint128_t((~z & 0x3FF) * (__builtin_popcount(z) == 5)) << s;
+			}
+		};
 
-		uint128_t oldO = ones, oldZ = zeros;
-		applyRows();
-		applyCols();
-		if (ones == oldO && zeros == oldZ) break;
+		auto applyCols = [&]() {
+			
+			zeros |= ((ones  >> 10 & ones  >> 20) & COL_DBL_DOWN) | ((ones  << 10 & ones  << 20) & COL_DBL_UP);
+			ones  |= ((zeros >> 10 & zeros >> 20) & COL_DBL_DOWN) | ((zeros << 10 & zeros << 20) & COL_DBL_UP);
+			zeros |= (ones  << 10) & ~ones  & (ones  >> 10) & COL_GAP;
+			ones  |= (zeros << 10) & ~zeros & (zeros >> 10) & COL_GAP;
+		
+			for (int c = 0; c < 10; ++c) {
+		
+				uint128_t mask = COL0 << c;
+				uint16_t o = pext128(ones,  mask);
+				uint16_t z = pext128(zeros, mask);
+				zeros |= pdep128((~o & 0x3FF) * (__builtin_popcount(o) == 5), mask);
+				ones  |= pdep128((~z & 0x3FF) * (__builtin_popcount(z) == 5), mask);
+			}
+		};
+		
+		while ((ones | zeros) != GRID_MASK) {
+
+			uint128_t oldO = ones, oldZ = zeros;
+			applyRows();
+			applyCols();
+			if (ones == oldO && zeros == oldZ) break;
+		}
+
+		puzzleSet[index].ones = ones;
+		puzzleSet[index].zeros = zeros;
 	}
-	
-	puzzleSet.ones[index]  = ones;
-	puzzleSet.zeros[index] = zeros;
 }
